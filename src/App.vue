@@ -1,7 +1,7 @@
 <script setup>
 import HelloWorld from './components/HelloWorld.vue'
 import TheWelcome from './components/TheWelcome.vue'
-import Henrik from './components/Henrik.vue'
+import MyName from './components/MyName.vue'
 </script>
 
 <template>
@@ -11,7 +11,7 @@ import Henrik from './components/Henrik.vue'
     <div class="wrapper">
       <HelloWorld msg="You did it!" />
       <HelloWorld msg="Again, you did it" />
-      <Henrik msg="Good!" />
+      <MyName msg="He Li" />
     </div>
   </header>
 
