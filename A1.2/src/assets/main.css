@@ -47,6 +47,52 @@ body {
   box-shadow: 0 0.25rem 1rem rgba(32, 73, 49, 0.08);
 }
 
+.event-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  border: 1px solid #dfe8e1;
+  border-radius: 0.75rem;
+  background-color: #ffffff;
+  box-shadow: 0 0.25rem 1rem rgba(32, 73, 49, 0.08);
+}
+
+.category-badge,
+.family-badge {
+  display: inline-block;
+  padding: 0.35rem 0.6rem;
+  border-radius: 2rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.category-badge {
+  background-color: #e5f2e9;
+  color: #286742;
+}
+
+.family-badge {
+  background-color: #fff0cb;
+  color: #725312;
+}
+
+.event-details div {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.event-details dt {
+  color: #415347;
+  font-weight: 600;
+}
+
+.event-details dd {
+  margin-bottom: 0;
+  color: #5f6e64;
+}
+
 .status-badge {
   display: inline-block;
   padding: 0.5rem 0.75rem;
@@ -69,5 +115,15 @@ body {
 
   .content-panel {
     padding: 1.25rem;
+  }
+
+  .event-card {
+    padding: 1.25rem;
+  }
+
+  .event-details div {
+    grid-template-columns: 1fr;
+    gap: 0;
+    margin-bottom: 0.75rem;
   }
 }

@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "title": "Community Tree Planting Day",
+    "date": "5 September 2026",
+    "location": "Clayton Community Garden",
+    "category": "Tree Planting",
+    "familyFriendly": true,
+    "availablePlaces": 18,
+    "description": "Help plant native trees and shrubs to improve local habitat and shade."
+  },
+  {
+    "id": 2,
+    "title": "Native Garden Workshop",
+    "date": "12 September 2026",
+    "location": "Footscray Community Arts Centre",
+    "category": "Education",
+    "familyFriendly": true,
+    "availablePlaces": 12,
+    "description": "Learn how to choose and care for native plants in a small home garden."
+  },
+  {
+    "id": 3,
+    "title": "Creek Biodiversity Walk",
+    "date": "19 September 2026",
+    "location": "Merri Creek Reserve",
+    "category": "Biodiversity",
+    "familyFriendly": true,
+    "availablePlaces": 20,
+    "description": "Join a guided walk and identify local plants, birds and creek habitats."
+  },
+  {
+    "id": 4,
+    "title": "Urban Habitat Restoration",
+    "date": "26 September 2026",
+    "location": "Westgate Park",
+    "category": "Habitat Restoration",
+    "familyFriendly": false,
+    "availablePlaces": 9,
+    "description": "Remove invasive plants and prepare an urban habitat area for new planting."
+  },
+  {
+    "id": 5,
+    "title": "Seedling Care Morning",
+    "date": "3 October 2026",
+    "location": "Richmond Community Nursery",
+    "category": "Plant Care",
+    "familyFriendly": false,
+    "availablePlaces": 14,
+    "description": "Support young native seedlings through watering, repotting and basic care."
+  },
+  {
+    "id": 6,
+    "title": "Family Nature Discovery Day",
+    "date": "10 October 2026",
+    "location": "Royal Park",
+    "category": "Community Activity",
+    "familyFriendly": true,
+    "availablePlaces": 24,
+    "description": "Take part in simple nature activities designed for children and families."
+  }
+]
