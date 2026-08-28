@@ -2,22 +2,72 @@
 
 #app {
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
   font-weight: normal;
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
+body {
+  min-width: 320px;
+  background-color: #f4f7f3;
+  color: #233128;
 }
 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
+.app-shell {
+  min-height: 100vh;
+}
+
+.hero-section {
+  background: linear-gradient(135deg, #1f6b45, #3d8b5f);
+  color: #ffffff;
+}
+
+.hero-label,
+.section-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08rem;
+  text-transform: uppercase;
+}
+
+.hero-card {
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+.section-label {
+  color: #2f7d50;
+}
+
+.content-panel {
+  padding: 1.5rem;
+  border: 1px solid #dfe8e1;
+  border-radius: 0.75rem;
+  background-color: #ffffff;
+  box-shadow: 0 0.25rem 1rem rgba(32, 73, 49, 0.08);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.5rem 0.75rem;
+  border-radius: 2rem;
+  background-color: #e5f2e9;
+  color: #286742;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.site-footer {
+  background-color: #173c2a;
+  color: #ffffff;
+}
+
+@media (max-width: 575.98px) {
+  .hero-section .display-4 {
+    font-size: 2.25rem;
+  }
+
+  .content-panel {
+    padding: 1.25rem;
   }
 }
