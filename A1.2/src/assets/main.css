@@ -47,6 +47,22 @@ body {
   box-shadow: 0 0.25rem 1rem rgba(32, 73, 49, 0.08);
 }
 
+.filter-panel {
+  padding: 1.25rem;
+  border: 1px solid #dfe8e1;
+  border-radius: 0.75rem;
+  background-color: #ffffff;
+}
+
+.filter-check {
+  padding-top: 0.5rem;
+}
+
+.result-count {
+  color: #286742;
+  font-weight: 600;
+}
+
 .event-card {
   display: flex;
   flex-direction: column;
@@ -115,6 +131,10 @@ body {
 
   .content-panel {
     padding: 1.25rem;
+  }
+
+  .filter-panel {
+    padding: 1rem;
   }
 
   .event-card {

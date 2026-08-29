@@ -1,6 +1,13 @@
 <script setup>
+import { ref } from 'vue'
 import EventList from './components/EventList.vue'
 import EventRegistrationForm from './components/EventRegistrationForm.vue'
+
+const selectedEvent = ref(null)
+
+const selectEvent = (event) => {
+  selectedEvent.value = event
+}
 </script>
 
 <template>
@@ -37,7 +44,7 @@ import EventRegistrationForm from './components/EventRegistrationForm.vue'
             Browse upcoming activities and choose an event that suits your interests.
           </p>
         </div>
-        <EventList />
+        <EventList @select-event="selectEvent" />
       </section>
 
       <section id="registration" class="mb-5">
@@ -48,7 +55,7 @@ import EventRegistrationForm from './components/EventRegistrationForm.vue'
             Complete the registration form to join a community environmental event.
           </p>
         </div>
-        <EventRegistrationForm />
+        <EventRegistrationForm :selected-event="selectedEvent" />
       </section>
     </main>
 
