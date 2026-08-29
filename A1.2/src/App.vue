@@ -2,11 +2,24 @@
 import { ref } from 'vue'
 import EventList from './components/EventList.vue'
 import EventRegistrationForm from './components/EventRegistrationForm.vue'
+import RegistrationList from './components/RegistrationList.vue'
 
 const selectedEvent = ref(null)
+const savedRegistrations = localStorage.getItem('eventRegistrations')
+const registrations = ref(savedRegistrations ? JSON.parse(savedRegistrations) : [])
 
 const selectEvent = (event) => {
   selectedEvent.value = event
+}
+
+const addRegistration = (registration) => {
+  registrations.value.push(registration)
+  localStorage.setItem('eventRegistrations', JSON.stringify(registrations.value))
+}
+
+const clearRegistrations = () => {
+  registrations.value = []
+  localStorage.removeItem('eventRegistrations')
 }
 </script>
 
@@ -55,7 +68,17 @@ const selectEvent = (event) => {
             Complete the registration form to join a community environmental event.
           </p>
         </div>
-        <EventRegistrationForm :selected-event="selectedEvent" />
+        <EventRegistrationForm
+          :selected-event="selectedEvent"
+          @registration-submitted="addRegistration"
+        />
+      </section>
+
+      <section id="registrations" class="mb-5">
+        <RegistrationList
+          :registrations="registrations"
+          @clear-registrations="clearRegistrations"
+        />
       </section>
     </main>
 

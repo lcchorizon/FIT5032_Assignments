@@ -70,6 +70,18 @@ body {
   gap: 1rem;
 }
 
+.registration-list-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.table-responsive {
+  border: 1px solid #e2e8e3;
+  border-radius: 0.5rem;
+}
+
 .event-card {
   display: flex;
   flex-direction: column;
@@ -155,6 +167,10 @@ body {
   }
 
   .registration-heading {
+    flex-direction: column;
+  }
+
+  .registration-list-heading {
     flex-direction: column;
   }
 }

@@ -8,6 +8,8 @@ const props = defineProps({
   }
 })
 
+const emit = defineEmits(['registration-submitted'])
+
 const formData = ref({
   fullName: '',
   email: '',
@@ -102,7 +104,18 @@ const submitForm = () => {
     return
   }
 
-  successMessage.value = `Registration details are ready for ${props.selectedEvent.title}.`
+  const registration = {
+    id: Date.now(),
+    eventTitle: props.selectedEvent.title,
+    fullName: formData.value.fullName.trim(),
+    email: formData.value.email.trim(),
+    participants: formData.value.participants,
+    experienceLevel: formData.value.experienceLevel
+  }
+
+  emit('registration-submitted', registration)
+  clearForm()
+  successMessage.value = `Registration submitted for ${props.selectedEvent.title}.`
 }
 
 const clearForm = () => {
