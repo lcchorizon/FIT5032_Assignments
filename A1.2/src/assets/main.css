@@ -63,6 +63,13 @@ body {
   font-weight: 600;
 }
 
+.registration-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
 .event-card {
   display: flex;
   flex-direction: column;
@@ -145,5 +152,9 @@ body {
     grid-template-columns: 1fr;
     gap: 0;
     margin-bottom: 0.75rem;
+  }
+
+  .registration-heading {
+    flex-direction: column;
   }
 }
