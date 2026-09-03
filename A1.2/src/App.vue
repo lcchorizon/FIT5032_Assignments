@@ -61,7 +61,7 @@ const closeMenu = () => {
       <div class="hero-section">
         <div class="container hero-layout">
           <div class="hero-content">
-            <p class="hero-label mb-3">Community environmental action</p>
+            <p class="hero-label mb-3"></p>
             <h1 class="hero-title">Small local actions can grow into a greener Melbourne.</h1>
             <p class="hero-description">
               Discover community planting, biodiversity and nature activities. Choose an event
@@ -73,32 +73,7 @@ const closeMenu = () => {
             </div>
           </div>
 
-          <div class="hero-card">
-            <p class="hero-card-label">How to get involved</p>
-            <ol class="journey-list">
-              <li>
-                <span>01</span>
-                <div>
-                  <strong>Discover</strong>
-                  <p>Use the filters to find a suitable local activity.</p>
-                </div>
-              </li>
-              <li>
-                <span>02</span>
-                <div>
-                  <strong>Choose</strong>
-                  <p>Check the date, location and available places.</p>
-                </div>
-              </li>
-              <li>
-                <span>03</span>
-                <div>
-                  <strong>Register</strong>
-                  <p>Enter your details and save your registration.</p>
-                </div>
-              </li>
-            </ol>
-          </div>
+         
         </div>
       </div>
     </header>

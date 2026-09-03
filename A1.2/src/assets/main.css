@@ -39,9 +39,16 @@ a {
   scroll-margin-top: 5rem;
 }
 
+.site-header {
+  padding-top: 4.75rem;
+}
+
 .main-navigation {
-  position: relative;
-  z-index: 10;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1000;
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   background-color: var(--green-950);
   color: #ffffff;
