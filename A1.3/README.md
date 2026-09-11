@@ -1,8 +1,8 @@
-# GreenConnect
+# GreenConnect A1.3
 
 ## Overview
 
-This Vue application helps people find environmental events in Melbourne and register for an event.
+This folder contains my A1.3 Basic Application Development (Version 2). It extends my previous A1.2 application. The application helps people find environmental events in Melbourne and register for an event.
 
 ## Features
 
@@ -14,6 +14,9 @@ This Vue application helps people find environmental events in Melbourne and reg
 - Form validation with clear error messages
 - Searchable and sortable registration records displayed in a data table
 - Registration records saved in Local Storage
+- Multiple users can create an account, log in and log out
+- Passwords are stored as salted hashes instead of plain text
+- The current login is saved in Local Storage
 
 ## Project Setup
 

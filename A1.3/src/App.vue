@@ -3,6 +3,8 @@ import { ref } from 'vue'
 import EventList from './components/EventList.vue'
 import EventRegistrationForm from './components/EventRegistrationForm.vue'
 import RegistrationList from './components/RegistrationList.vue'
+import AccountAccess from './components/AccountAccess.vue'
+import { currentUser } from './auth'
 
 const selectedEvent = ref(null)
 const menuOpen = ref(false)
@@ -51,6 +53,9 @@ const closeMenu = () => {
           <div id="navigationLinks" class="navigation-links" :class="{ open: menuOpen }">
             <a href="#home" @click="closeMenu">Home</a>
             <a href="#events" @click="closeMenu">Events</a>
+            <a href="#account" @click="closeMenu">
+              {{ currentUser ? currentUser.fullName : 'Account' }}
+            </a>
             <a href="#registration" @click="closeMenu">Get involved</a>
             <a href="#registrations" @click="closeMenu">Records</a>
             <a class="navigation-action" href="#events" @click="closeMenu">Find an event</a>
@@ -79,6 +84,21 @@ const closeMenu = () => {
     </header>
 
     <main>
+      <section id="account" class="page-section section-soft account-section">
+        <div class="container">
+          <div class="section-heading">
+            <div>
+              <p class="section-label mb-2">Your account</p>
+              <h2 class="section-title">Join the GreenConnect community</h2>
+            </div>
+            <p class="section-introduction">
+              Register a new account or log in with an account saved in this browser.
+            </p>
+          </div>
+          <AccountAccess />
+        </div>
+      </section>
+
       <section id="events" class="page-section">
         <div class="container">
           <div class="section-heading">
