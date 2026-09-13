@@ -20,6 +20,9 @@ This folder contains my A1.3 Basic Application Development (Version 2). It exten
 - New accounts use the community member role
 - A separate admin role can open the protected Registration Records page
 - Vue Router guards prevent unauthorised users from opening admin records
+- Logged-in users can give each activity a rating from 1 to 5
+- Each activity displays the average score and rating count from all users
+- A user can update their existing rating without creating a second vote
 
 ## Demo Accounts
 

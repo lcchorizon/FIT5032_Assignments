@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import events from '../assets/json/events.json'
+import { currentUser } from '../auth'
 
 const emit = defineEmits(['select-event'])
 
@@ -8,6 +9,10 @@ const selectedCategory = ref('All')
 const familyOnly = ref(false)
 const selectedEventId = ref(null)
 const searchTerm = ref('')
+const ratingMessageEventId = ref(null)
+const savedRatings = localStorage.getItem('eventRatings')
+const ratings = ref(savedRatings ? JSON.parse(savedRatings) : [])
+const ratingOptions = [1, 2, 3, 4, 5]
 
 const categories = [
   'All',
@@ -38,6 +43,54 @@ const filteredEvents = computed(() => {
 const selectEvent = (event) => {
   selectedEventId.value = event.id
   emit('select-event', event)
+}
+
+const getRatingsForEvent = (eventId) => {
+  return ratings.value.filter((rating) => rating.eventId === eventId)
+}
+
+const getAverageRating = (eventId) => {
+  const eventRatings = getRatingsForEvent(eventId)
+
+  if (eventRatings.length === 0) return 0
+
+  let total = 0
+  eventRatings.forEach((rating) => {
+    total += rating.score
+  })
+
+  return (total / eventRatings.length).toFixed(1)
+}
+
+const getUserRating = (eventId) => {
+  if (!currentUser.value) return 0
+
+  const userRating = ratings.value.find(
+    (rating) => rating.eventId === eventId && rating.userId === currentUser.value.id
+  )
+
+  return userRating ? userRating.score : 0
+}
+
+const rateEvent = (eventId, score) => {
+  if (!currentUser.value) return
+
+  const existingRating = ratings.value.find(
+    (rating) => rating.eventId === eventId && rating.userId === currentUser.value.id
+  )
+
+  if (existingRating) {
+    existingRating.score = score
+  } else {
+    ratings.value.push({
+      eventId,
+      userId: currentUser.value.id,
+      score
+    })
+  }
+
+  localStorage.setItem('eventRatings', JSON.stringify(ratings.value))
+  ratingMessageEventId.value = eventId
 }
 </script>
 
@@ -126,6 +179,46 @@ const selectEvent = (event) => {
         </dl>
 
         <p class="text-secondary mb-4">{{ event.description }}</p>
+
+        <section class="event-rating" :aria-label="'Rating for ' + event.title">
+          <div class="rating-summary">
+            <span>Community rating</span>
+            <strong v-if="getAverageRating(event.id)">
+              {{ getAverageRating(event.id) }} / 5
+              <small>
+                ({{ getRatingsForEvent(event.id).length }}
+                {{ getRatingsForEvent(event.id).length === 1 ? 'rating' : 'ratings' }})
+              </small>
+            </strong>
+            <strong v-else>No ratings yet</strong>
+          </div>
+
+          <div class="rating-buttons" aria-label="Choose a rating from 1 to 5">
+            <button
+              v-for="score in ratingOptions"
+              :key="score"
+              type="button"
+              :class="{ selected: score <= getUserRating(event.id) }"
+              :disabled="!currentUser"
+              :aria-label="'Rate ' + event.title + ' ' + score + ' out of 5'"
+              @click="rateEvent(event.id, score)"
+            >
+              ★
+            </button>
+          </div>
+
+          <p v-if="currentUser" class="rating-help">
+            {{
+              getUserRating(event.id)
+                ? 'Your rating: ' + getUserRating(event.id) + ' / 5'
+                : 'Choose your rating.'
+            }}
+          </p>
+          <p v-else class="rating-help">Log in to rate this activity.</p>
+          <p v-if="ratingMessageEventId === event.id" class="rating-status" role="status">
+            Your rating was saved.
+          </p>
+        </section>
 
         <button
           type="button"
