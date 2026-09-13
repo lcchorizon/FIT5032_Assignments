@@ -36,6 +36,16 @@ const validateFullName = (showError) => {
     return false
   }
 
+  if (fullName.length > 50) {
+    if (showError) errors.value.fullName = 'Full name must be 50 characters or less.'
+    return false
+  }
+
+  if (fullName.includes('<') || fullName.includes('>')) {
+    if (showError) errors.value.fullName = 'Full name cannot include < or >.'
+    return false
+  }
+
   errors.value.fullName = null
   return true
 }
@@ -46,6 +56,11 @@ const validateEmail = (showError) => {
 
   if (!emailPattern.test(email)) {
     if (showError) errors.value.email = 'Enter a valid email address.'
+    return false
+  }
+
+  if (email.length > 100) {
+    if (showError) errors.value.email = 'Email address must be 100 characters or less.'
     return false
   }
 
@@ -171,6 +186,7 @@ const clearForm = () => {
             id="fullName"
             v-model="formData.fullName"
             type="text"
+            maxlength="50"
             class="form-control"
             :class="{ 'is-invalid': errors.fullName }"
             @blur="validateFullName(true)"
@@ -185,6 +201,7 @@ const clearForm = () => {
             id="email"
             v-model="formData.email"
             type="email"
+            maxlength="100"
             class="form-control"
             :class="{ 'is-invalid': errors.email }"
             @blur="validateEmail(true)"

@@ -23,11 +23,17 @@ This folder contains my A1.3 Basic Application Development (Version 2). It exten
 - Logged-in users can give each activity a rating from 1 to 5
 - Each activity displays the average score and rating count from all users
 - A user can update their existing rating without creating a second vote
+- Text fields have client-side validation and length limits
+- Names containing the HTML characters `<` or `>` are rejected
 
 ## Demo Accounts
 
 - Admin: `admin@greenconnect.org` / `Admin123!`
 - Community members can create their own accounts from the Account section
+
+## Basic Security
+
+I use Vue text interpolation to display names and registration details. I do not use `v-html`, so Vue displays user input as text instead of running it as HTML. I also validate names, email addresses, passwords and participant numbers before saving the data. Names containing `<` or `>` are rejected because these characters can be used in HTML tags. Passwords are stored as salted hashes instead of plain text.
 
 ## Project Setup
 

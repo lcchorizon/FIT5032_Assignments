@@ -35,17 +35,28 @@ const changeMode = (newMode) => {
 const validateForm = () => {
   const newErrors = {}
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  const fullName = formData.value.fullName.trim()
 
-  if (mode.value === 'register' && formData.value.fullName.trim().length < 3) {
-    newErrors.fullName = 'Full name must be at least 3 characters.'
+  if (mode.value === 'register') {
+    if (fullName.length < 3) {
+      newErrors.fullName = 'Full name must be at least 3 characters.'
+    } else if (fullName.length > 50) {
+      newErrors.fullName = 'Full name must be 50 characters or less.'
+    } else if (fullName.includes('<') || fullName.includes('>')) {
+      newErrors.fullName = 'Full name cannot include < or >.'
+    }
   }
 
   if (!emailPattern.test(formData.value.email.trim())) {
     newErrors.email = 'Enter a valid email address.'
+  } else if (formData.value.email.trim().length > 100) {
+    newErrors.email = 'Email address must be 100 characters or less.'
   }
 
   if (formData.value.password.length < 8) {
     newErrors.password = 'Password must be at least 8 characters.'
+  } else if (formData.value.password.length > 64) {
+    newErrors.password = 'Password must be 64 characters or less.'
   } else if (!/[A-Za-z]/.test(formData.value.password) || !/\d/.test(formData.value.password)) {
     newErrors.password = 'Password must include at least one letter and one number.'
   }
@@ -171,6 +182,7 @@ const handleLogout = () => {
               :class="{ 'is-invalid': errors.fullName }"
               type="text"
               autocomplete="name"
+              maxlength="50"
             >
             <div v-if="errors.fullName" class="invalid-feedback">{{ errors.fullName }}</div>
           </div>
@@ -184,6 +196,7 @@ const handleLogout = () => {
               :class="{ 'is-invalid': errors.email }"
               type="email"
               autocomplete="email"
+              maxlength="100"
             >
             <div v-if="errors.email" class="invalid-feedback">{{ errors.email }}</div>
           </div>
@@ -197,6 +210,7 @@ const handleLogout = () => {
               :class="{ 'is-invalid': errors.password }"
               type="password"
               :autocomplete="mode === 'login' ? 'current-password' : 'new-password'"
+              maxlength="64"
             >
             <div v-if="errors.password" class="invalid-feedback">{{ errors.password }}</div>
           </div>
@@ -210,6 +224,7 @@ const handleLogout = () => {
               :class="{ 'is-invalid': errors.confirmPassword }"
               type="password"
               autocomplete="new-password"
+              maxlength="64"
             >
             <div v-if="errors.confirmPassword" class="invalid-feedback">
               {{ errors.confirmPassword }}
