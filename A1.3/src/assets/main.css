@@ -266,6 +266,71 @@ a {
   font-weight: 750;
 }
 
+.role-badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background-color: var(--warm);
+  color: var(--green-950);
+  font-size: 0.78rem;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.demo-account-note {
+  margin-top: 1rem;
+  color: var(--muted);
+  font-size: 0.84rem;
+  text-align: center;
+}
+
+.route-page {
+  min-height: calc(100vh - 12rem);
+  padding-top: 9rem;
+  padding-bottom: 5rem;
+}
+
+.records-introduction {
+  margin-top: -1.5rem;
+  margin-bottom: 2rem;
+}
+
+.admin-identity {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.access-denied-layout {
+  display: grid;
+  place-items: center;
+}
+
+.access-denied-card {
+  max-width: 44rem;
+  text-align: center;
+}
+
+.access-denied-card h1 {
+  margin-bottom: 1rem;
+  color: var(--green-950);
+}
+
+.access-denied-card > p:not(.section-label) {
+  color: var(--muted);
+  line-height: 1.75;
+}
+
+.access-denied-code {
+  display: block;
+  color: var(--green-100);
+  font-size: 5rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
 .hero-card {
   padding: 1.8rem;
   border: 1px solid rgba(255, 255, 255, 0.22);

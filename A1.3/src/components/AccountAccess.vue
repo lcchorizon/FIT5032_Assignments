@@ -1,7 +1,10 @@
 <script setup>
 import { ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { currentUser, loginUser, logoutUser, registerUser } from '../auth'
 
+const route = useRoute()
+const router = useRouter()
 const mode = ref('login')
 const isSubmitting = ref(false)
 const formData = ref({
@@ -81,6 +84,10 @@ const submitForm = async () => {
         ? 'Your account has been created and you are now logged in.'
         : 'You are now logged in.'
     clearForm()
+
+    if (mode.value === 'login' && typeof route.query.redirect === 'string') {
+      router.push(route.query.redirect)
+    }
   } finally {
     isSubmitting.value = false
   }
@@ -114,6 +121,7 @@ const handleLogout = () => {
         <span class="account-status">Logged in</span>
         <h3>Welcome, {{ currentUser.fullName }}</h3>
         <p class="mb-1"><strong>Email:</strong> {{ currentUser.email }}</p>
+        <p><strong>Role:</strong> <span class="role-badge">{{ currentUser.role }}</span></p>
         <p class="text-secondary">Your login will remain available when this page is refreshed.</p>
         <div v-if="statusMessage" class="alert alert-success" role="status">
           {{ statusMessage }}
@@ -151,6 +159,9 @@ const handleLogout = () => {
         </p>
 
         <form novalidate @submit.prevent="submitForm">
+          <div v-if="route.query.reason === 'login-required'" class="alert alert-warning">
+            Please log in before opening the protected Records page.
+          </div>
           <div v-if="mode === 'register'" class="mb-3">
             <label for="accountFullName" class="form-label">Full name</label>
             <input
@@ -215,6 +226,10 @@ const handleLogout = () => {
           <button type="submit" class="btn btn-success w-100" :disabled="isSubmitting">
             {{ mode === 'login' ? 'Log in' : 'Create account' }}
           </button>
+
+          <p v-if="mode === 'login'" class="demo-account-note mb-0">
+            Admin demo: admin@greenconnect.org / Admin123!
+          </p>
         </form>
       </template>
     </div>

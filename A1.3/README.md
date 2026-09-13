@@ -17,6 +17,14 @@ This folder contains my A1.3 Basic Application Development (Version 2). It exten
 - Multiple users can create an account, log in and log out
 - Passwords are stored as salted hashes instead of plain text
 - The current login is saved in Local Storage
+- New accounts use the community member role
+- A separate admin role can open the protected Registration Records page
+- Vue Router guards prevent unauthorised users from opening admin records
+
+## Demo Accounts
+
+- Admin: `admin@greenconnect.org` / `Admin123!`
+- Community members can create their own accounts from the Account section
 
 ## Project Setup
 

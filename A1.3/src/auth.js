@@ -2,6 +2,8 @@ import { ref } from 'vue'
 
 const USERS_STORAGE_KEY = 'greenConnectUsers'
 const SESSION_STORAGE_KEY = 'greenConnectSession'
+const ADMIN_EMAIL = 'admin@greenconnect.org'
+const ADMIN_PASSWORD = 'Admin123!'
 
 const readStoredValue = (key, fallbackValue) => {
   try {
@@ -49,7 +51,30 @@ const createSession = (user) => {
   localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(sessionUser))
 }
 
+const initialiseAdminAccount = async () => {
+  const adminAlreadyExists = users.value.some((user) => user.email === ADMIN_EMAIL)
+
+  if (adminAlreadyExists) return
+
+  const salt = createSalt()
+  const passwordHash = await hashPassword(ADMIN_PASSWORD, salt)
+
+  users.value.push({
+    id: crypto.randomUUID(),
+    fullName: 'GreenConnect Admin',
+    email: ADMIN_EMAIL,
+    passwordHash,
+    salt,
+    role: 'admin',
+    createdAt: new Date().toISOString()
+  })
+  saveUsers()
+}
+
+export const authReady = initialiseAdminAccount()
+
 export const registerUser = async ({ fullName, email, password }) => {
+  await authReady
   const cleanEmail = normaliseEmail(email)
   const emailAlreadyExists = users.value.some((user) => user.email === cleanEmail)
 
@@ -77,6 +102,7 @@ export const registerUser = async ({ fullName, email, password }) => {
 }
 
 export const loginUser = async ({ email, password }) => {
+  await authReady
   const cleanEmail = normaliseEmail(email)
   const user = users.value.find((storedUser) => storedUser.email === cleanEmail)
 
@@ -98,3 +124,5 @@ export const logoutUser = () => {
   currentUser.value = null
   localStorage.removeItem(SESSION_STORAGE_KEY)
 }
+
+export const userHasRole = (role) => currentUser.value?.role === role
