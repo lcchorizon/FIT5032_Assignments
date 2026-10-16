@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "fit5032-66c61"
+  },
+  "targets": {
+    "fit5032-66c61": {
+      "hosting": {
+        "greenconnect": [
+          "greenconnect-a3-66c61"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

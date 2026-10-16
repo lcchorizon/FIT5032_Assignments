@@ -1,0 +1,35 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+    function admin() {
+      return signedIn() && request.auth.token.get('greenconnectAdmin', false) == true;
+    }
+    // Keep the earlier coursework rule outside GreenConnect until its original expiry.
+    match /{topLevel}/{document=**} {
+      allow read, write: if topLevel != 'greenconnect'
+        && request.time < timestamp.date(2026, 10, 18);
+    }
+    match /greenconnect/v1 {
+      match /events/{eventId} {
+        allow read: if true;
+        allow write: if false;
+        match /ratings/{userId} {
+          allow read: if signedIn() && request.auth.uid == userId;
+          allow write: if false;
+        }
+      }
+      match /profiles/{userId} {
+        allow get: if signedIn() && (request.auth.uid == userId || admin());
+        allow list: if admin();
+        allow write: if false;
+      }
+      match /registrations/{registrationId} {
+        allow read: if signedIn() && (resource.data.userId == request.auth.uid || admin());
+        allow write: if false;
+      }
+    }
+  }
+}

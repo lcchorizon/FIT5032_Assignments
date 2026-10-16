@@ -38,3 +38,14 @@ __screenshots__/
 # Vite
 *.timestamp-*-*.mjs
 Week5/output/word/Week5_eFolio_Evidence.docx
+
+A3/IMPLEMENTATION_PLAN.md
+A3/.env*
+!A3/.env.example
+A3/emulator-data/
+A3/.firebase/
+A3/*-debug.log
+A3/test-results/
+
+A3/functions/.env*
+!A3/functions/.env.example
