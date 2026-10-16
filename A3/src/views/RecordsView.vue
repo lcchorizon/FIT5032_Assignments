@@ -1,8 +1,12 @@
 <script setup>
+import { computed, ref } from 'vue'
+import examples from '../assets/json/registration-examples.json'
 import RegistrationList from '../components/RegistrationList.vue'
 import { currentUser } from '../auth'
 import { useCollection } from '../data'
 const { rows: registrations, loading, error } = useCollection('registrations', { admin: true })
+const source = ref('saved')
+const displayedRows = computed(() => source.value === 'examples' ? examples : registrations.value)
 </script>
 
 <template>
@@ -22,10 +26,17 @@ const { rows: registrations, loading, error } = useCollection('registrations', {
         This page contains submitted participant information and is only available to an
         administrator.
       </p>
-      <p v-if="loading" role="status">Loading registration records…</p>
+      <div class="records-source mb-4">
+        <label for="recordSource" class="form-label fw-semibold">Record source</label>
+        <select id="recordSource" v-model="source" class="form-select">
+          <option value="saved">Saved bookings</option>
+          <option value="examples">Demonstration records (fictional)</option>
+        </select>
+      </div>
+      <p v-if="loading && source === 'saved'" role="status">Loading registration records…</p>
       <p v-if="error" class="alert alert-danger" role="alert">{{ error }}</p>
-      <RegistrationList v-if="!loading && !error"
-        :registrations="registrations"
+      <RegistrationList v-if="source === 'examples' || (!loading && !error)"
+        :key="source" :registrations="displayedRows" :examples="source === 'examples'"
       />
     </section>
   </main>

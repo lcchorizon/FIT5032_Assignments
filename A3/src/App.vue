@@ -31,7 +31,7 @@ const closeMenu = () => {
 
         <div id="navigationLinks" class="navigation-links" :class="{ open: menuOpen }">
           <RouterLink :to="{ name: 'home', hash: '#home' }" @click="closeMenu">Home</RouterLink>
-          <RouterLink :to="{ name: 'home', hash: '#events' }" @click="closeMenu">
+          <RouterLink :to="{ name: 'events' }" @click="closeMenu">
             Events
           </RouterLink>
           <RouterLink :to="{ name: 'calendar' }" @click="closeMenu">Calendar</RouterLink>
@@ -62,7 +62,7 @@ const closeMenu = () => {
           <p class="mb-0">Community environmental activities across Melbourne.</p>
         </div>
         <div class="footer-links">
-          <RouterLink :to="{ name: 'home', hash: '#events' }">Events</RouterLink>
+          <RouterLink :to="{ name: 'events' }">Events</RouterLink>
           <RouterLink :to="{ name: 'home', hash: '#registration' }">Register</RouterLink>
           <RouterLink v-if="userHasRole('admin')" :to="{ name: 'records' }">Records</RouterLink>
         </div>

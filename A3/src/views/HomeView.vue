@@ -60,6 +60,7 @@ const selectEvent = (event) => {
           </div>
           <p class="section-introduction">
             Browse upcoming activities and narrow the list by interest or family suitability.
+            <RouterLink :to="{ name: 'events' }">Compare activities in a table</RouterLink>
           </p>
         </div>
         <EventList @select-event="selectEvent" />

@@ -961,3 +961,20 @@ fieldset { min-width: 0; }
 .booking-cancelled { background: #edf0ed; color: #4c5751; }
 @media (max-width: 900px) { .booking-calendar-layout { grid-template-columns: 1fr; } }
 @media (max-width: 480px) { .calendar-panel { padding: 1rem; } .calendar-days button { min-height: 48px; } .booking-summary { align-items: flex-start; flex-direction: column; } }
+
+.table-toolbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 1.25rem; margin: 1.25rem 0 .75rem; }
+.table-search { flex: 1; max-width: 420px; }
+.table-export-help { color: #506159; font-size: .9rem; }
+.table-result-count { font-weight: 600; }
+.table-scroll-region { position: relative; max-width: 100%; width: 100%; overflow-x: auto; border: 1px solid #d5dfd8; border-radius: 8px; }
+.records-data-table { width: 100%; min-width: 1050px; border-collapse: collapse; font-size: .92rem; }
+.records-data-table th, .records-data-table td { padding: .85rem .75rem; border-bottom: 1px solid #dce5de; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+.records-data-table th { background: #eaf1eb; color: #183e2a; }
+.records-data-table thead td { background: #f4f7f4; }
+.records-data-table td input { min-width: 100px; }
+.records-data-table tbody tr:nth-child(even) { background: #f7f9f7; }
+.table-sort-button { display: flex; align-items: center; justify-content: space-between; gap: .5rem; width: 100%; background: transparent; border: 0; color: inherit; padding: 0; font-weight: 700; text-align: left; }
+.records-data-table .table-empty { padding: 2rem 1rem; text-align: center; }
+.table-pagination { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 1.25rem; }
+.records-source { max-width: 380px; }
+@media (max-width: 700px) { .table-toolbar { flex-direction: column; align-items: stretch; } .table-search { max-width: none; } .table-pagination > div { flex-wrap: wrap; gap: .6rem !important; } }

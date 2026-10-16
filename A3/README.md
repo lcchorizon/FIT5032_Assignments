@@ -7,6 +7,8 @@ I am extending my A1.3 application for community environmental activities in Mel
 - Firebase Authentication accounts with registration, login, logout and session restoration
 - Firestore profiles and member/admin access using a signed `greenconnectAdmin` claim
 - Searchable event cards with category and family-friendly filters
+- Event directory and admin registration tables with sorting, column filters and 10 rows per page
+- CSV and PDF exports of all matching records in their current sort order
 - Activity calendar with Melbourne dates and times
 - Confirmed group bookings with server-side capacity, duplicate and overlap checks
 - Cancellation before the event starts, with places released for other members
@@ -106,3 +108,15 @@ npm run deploy
 ```
 
 The Firebase web configuration identifies the app. Mail-provider secrets and service-account private keys must never be placed in the frontend or committed.
+
+## Tables and exports
+
+The public event directory is at `/events`. The registration table is at `/records` and still needs an admin account. Both tables have a global search, individual column searches, sorting and fixed 10-row pagination. Searching ignores letter case and accents. Numeric columns sort as numbers.
+
+Exports include every matching row, across all pages. PDF exports include the filter and sort summary, repeated table headings, page numbers and Melbourne export time. CSV uses UTF-8 with a byte-order mark for spreadsheet applications, quotes values and protects text cells starting with spreadsheet formula prefixes.
+
+The admin page has an optional fictional demonstration dataset so I can show pagination without creating fake bookings in Firestore. It is labelled in the table and PDF title, and its CSV filename includes `registration-examples`. These examples use reserved `example.test` addresses and do not affect event capacity or participation statistics.
+
+PDF export loads its library and font only when needed. The font is Noto Sans SC, distributed under the SIL Open Font License. The licence is in `public/licenses/NotoSansSC-LICENSE.txt`; the original font comes from https://github.com/notofonts/noto-cjk/tree/main/Sans/Variable/TTF/Subset. Unsupported symbols are shown as `?` with a notice in the PDF and on screen; CSV retains the original text.
+
+The bundled export font is a static weight-400 instance of Noto Sans SC, made with FontTools.
