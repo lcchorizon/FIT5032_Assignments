@@ -7,12 +7,15 @@ I am extending my A1.3 application for community environmental activities in Mel
 - Firebase Authentication accounts with registration, login, logout and session restoration
 - Firestore profiles and member/admin access using a signed `greenconnectAdmin` claim
 - Searchable event cards with category and family-friendly filters
-- Cloud Function validation for registration interests and event ratings
+- Activity calendar with Melbourne dates and times
+- Confirmed group bookings with server-side capacity, duplicate and overlap checks
+- Cancellation before the event starts, with places released for other members
+- Cloud Function validation for bookings and event ratings
 - Personal registration records and an admin records page
 - One rating per account for each event, with public rating totals
 - Firestore rules that block direct client changes to profiles, events, ratings and registrations
 
-Registration currently saves an interest. It does not reserve a place. Calendar bookings and capacity management are the next development stage.
+Bookings reserve places only after the server transaction succeeds. Events that overlap an existing confirmed booking are rejected. An event can start when another ends. Earlier interest records remain visible as interests until the member completes a booking.
 
 ## Local setup
 
@@ -61,7 +64,7 @@ npm run test:emulators
 npm run build
 ```
 
-Stop any running emulators before `test:emulators`. The integration suite uses an isolated demo project and resets its local test data. It checks anonymous access, member/admin boundaries, role escalation attempts, caller identity, duplicate registrations, past events and rating updates.
+Stop any running emulators before `test:emulators`. The integration suite uses an isolated demo project and resets its local test data. It checks anonymous access, member/admin boundaries, role escalation attempts, caller identity, duplicate bookings, past events and rating updates. It also tests concurrent requests for the last place, concurrent overlapping bookings, cancellation ownership, repeated cancellation and rebooking.
 
 ## Cloud setup
 
@@ -72,7 +75,10 @@ A3 uses the `greenconnect` Functions codebase and a separate hosting target in t
 - `events/{eventId}` contains public event details and rating totals.
 - `events/{eventId}/ratings/{uid}` contains the current account's private vote.
 - `profiles/{uid}` contains the account's name, email, role and creation time.
-- `registrations/{uid_eventId}` contains an authenticated member's registration interest.
+- `registrations/{uid_eventId}` contains a member's booking and its current status.
+- `schedules/{uid}` contains server-only reservations used to check time conflicts.
+
+I update the event count, member schedule and booking in one Firestore transaction. Two requests for one activity share the event document. Two requests by one member share the schedule document. This lets Firestore detect competing changes before either request can overbook or create conflicting bookings. Cancellation updates the same documents and repeated cancellation does not release places twice.
 
 The backend takes the user ID and email from the verified Firebase token. It does not accept a role or account identity from the form. Only a privileged Admin SDK operation can assign the `greenconnectAdmin` claim. Router guards control navigation, while Firestore rules and callable functions enforce access independently.
 

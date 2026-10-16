@@ -1,13 +1,11 @@
 <script setup>
 import { ref } from 'vue'
-import { currentUser } from '../auth'
-import { useCollection } from '../data'
 import AccountAccess from '../components/AccountAccess.vue'
 import EventList from '../components/EventList.vue'
 import EventRegistrationForm from '../components/EventRegistrationForm.vue'
+import MyBookings from '../components/MyBookings.vue'
 
 const selectedEvent = ref(null)
-const { rows: registrations, loading, error } = useCollection('registrations', { owned: true })
 const selectEvent = (event) => {
   selectedEvent.value = event
 }
@@ -22,14 +20,14 @@ const selectEvent = (event) => {
           <h1 class="hero-title">Small local actions can grow into a greener Melbourne.</h1>
           <p class="hero-description">
             Discover community planting, biodiversity and nature activities. Choose an event that
-            suits you and register your interest in a few simple steps.
+            suits you and book a place in a few simple steps.
           </p>
           <div class="hero-actions">
             <RouterLink class="btn btn-light btn-lg" :to="{ name: 'home', hash: '#events' }">
               Explore events
             </RouterLink>
-            <RouterLink class="hero-link" :to="{ name: 'home', hash: '#registration' }">
-              How registration works
+            <RouterLink class="hero-link" :to="{ name: 'calendar' }">
+              View activity calendar
             </RouterLink>
           </div>
         </div>
@@ -73,10 +71,10 @@ const selectEvent = (event) => {
         <div class="section-heading">
           <div>
             <p class="section-label mb-2">Join an activity</p>
-            <h2 class="section-title">Register your interest</h2>
+            <h2 class="section-title">Book your place</h2>
           </div>
           <p class="section-introduction">
-            Select an event and register your interest. This does not reserve a place yet.
+            Choose an event and reserve places for yourself or your group.
           </p>
         </div>
 
@@ -90,7 +88,7 @@ const selectEvent = (event) => {
             <p>Complete every required field and check the event information.</p>
             <p class="guide-number">03</p>
             <h3>Keep your record</h3>
-            <p>An administrator can review submitted records on the protected Records page.</p>
+            <p>Check My bookings for your confirmed place. You can cancel before the event starts.</p>
           </aside>
 
           <EventRegistrationForm
@@ -100,20 +98,7 @@ const selectEvent = (event) => {
       </div>
     </section>
 
-    <section v-if="currentUser" class="page-section">
-      <div class="container">
-        <h2 class="section-title">My registrations</h2>
-        <p v-if="loading" role="status">Loading your registrations…</p>
-        <p v-if="error" class="alert alert-danger" role="alert">{{ error }}</p>
-        <ul v-if="registrations.length" class="list-group">
-          <li v-for="registration in registrations" :key="registration.id" class="list-group-item">
-            <strong>{{ registration.eventTitle }}</strong> — {{ registration.participants }} participant(s)
-            <span class="status-badge ms-2">Interest registered</span>
-          </li>
-        </ul>
-        <p v-else-if="!loading && !error">You have not registered for any activities yet.</p>
-      </div>
-    </section>
+    <MyBookings />
     <section class="community-banner">
       <div class="container community-banner-inner">
         <div>

@@ -181,7 +181,7 @@ const handleLogout = async () => {
 
         <form novalidate @submit.prevent="submitForm">
           <div v-if="route.query.reason === 'login-required'" class="alert alert-warning">
-            Please log in before opening the protected Records page.
+            Please log in to continue.
           </div>
           <div v-if="mode === 'register'" class="mb-3">
             <label for="accountFullName" class="form-label">Full name</label>

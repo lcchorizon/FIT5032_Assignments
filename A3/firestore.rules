@@ -21,6 +21,9 @@ service cloud.firestore {
           allow write: if false;
         }
       }
+      match /schedules/{userId} {
+        allow read, write: if false;
+      }
       match /profiles/{userId} {
         allow get: if signedIn() && (request.auth.uid == userId || admin());
         allow list: if admin();

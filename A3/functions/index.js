@@ -2,7 +2,8 @@ import { initializeApp } from 'firebase-admin/app'
 import { FieldValue, getFirestore } from 'firebase-admin/firestore'
 import { HttpsError, onCall } from 'firebase-functions/v2/https'
 import { setGlobalOptions } from 'firebase-functions/v2'
-import { experienceLevels, validId, validName, validParticipants } from './validation.js'
+import { validId, validName } from './validation.js'
+import { bookEvent, cancelBooking } from './bookings.js'
 
 initializeApp()
 setGlobalOptions({ region: 'us-central1', maxInstances: 3 })
@@ -39,39 +40,12 @@ export const greenconnectProfile = onCall(async (request) => {
   })
 })
 
+export const greenconnectBookEvent = onCall(bookEvent)
+export const greenconnectCancelBooking = onCall(cancelBooking)
+
 export const greenconnectRegisterInterest = onCall(async (request) => {
-  const auth = requireUser(request)
-  const { eventId, fullName, participants, experienceLevel, termsAccepted } = request.data || {}
-  if (!validId(eventId) || !validName(fullName) || !validParticipants(participants) ||
-      !experienceLevels.includes(experienceLevel) || termsAccepted !== true) {
-    throw new HttpsError('invalid-argument', 'Check your registration details and try again.')
-  }
-  const eventRef = root.collection('events').doc(eventId)
-  const registrationRef = root.collection('registrations').doc(`${auth.uid}_${eventId}`)
-  await getFirestore().runTransaction(async (transaction) => {
-    const [eventSnapshot, registrationSnapshot] = await Promise.all([
-      transaction.get(eventRef), transaction.get(registrationRef),
-    ])
-    const startTime = Date.parse(eventSnapshot.data()?.startAt)
-    if (!eventSnapshot.exists || !Number.isFinite(startTime) || startTime <= Date.now()) {
-      throw new HttpsError('failed-precondition', 'This event is no longer accepting registrations.')
-    }
-    if (registrationSnapshot.exists) {
-      throw new HttpsError('already-exists', 'You have already registered your interest in this event.')
-    }
-    transaction.create(registrationRef, {
-      userId: auth.uid,
-      eventId,
-      eventTitle: eventSnapshot.data().title,
-      fullName: fullName.trim(),
-      email: auth.token.email,
-      participants,
-      experienceLevel,
-      status: 'interest',
-      createdAt: FieldValue.serverTimestamp(),
-    })
-  })
-  return { id: registrationRef.id, status: 'interest' }
+  requireUser(request)
+  throw new HttpsError('failed-precondition', 'Bookings are now available. Refresh the page and use Book event to reserve a place.')
 })
 
 export const greenconnectRateEvent = onCall(async (request) => {

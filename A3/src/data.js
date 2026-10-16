@@ -23,7 +23,11 @@ export const useCollection = (name, { owned = false, admin = false, sort = null 
     if (owned) filters.push(where('userId', '==', currentUser.value.id))
     if (sort) filters.push(orderBy(sort))
     unsubscribe = onSnapshot(query(collection(db, ...dataPath(name)), ...filters), (snapshot) => {
-      rows.value = snapshot.docs.map((row) => ({ ...row.data(), id: row.id }))
+      rows.value = snapshot.docs.map((row) => {
+        const data = row.data()
+        if (name === 'events') data.availablePlaces = Math.max(0, data.capacity - (data.bookedPlaces || 0))
+        return { ...data, id: row.id }
+      })
       loading.value = false
     }, (failure) => {
       rows.value = []
@@ -56,4 +60,5 @@ export const useOwnRatings = (events) => {
 }
 
 export const saveRating = (eventId, score) => httpsCallable(functions, 'greenconnectRateEvent')({ eventId, score })
-export const registerInterest = (details) => httpsCallable(functions, 'greenconnectRegisterInterest')(details)
+export const bookEvent = (details) => httpsCallable(functions, 'greenconnectBookEvent')(details)
+export const cancelBooking = (eventId) => httpsCallable(functions, 'greenconnectCancelBooking')({ eventId })

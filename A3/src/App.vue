@@ -34,6 +34,7 @@ const closeMenu = () => {
           <RouterLink :to="{ name: 'home', hash: '#events' }" @click="closeMenu">
             Events
           </RouterLink>
+          <RouterLink :to="{ name: 'calendar' }" @click="closeMenu">Calendar</RouterLink>
           <RouterLink :to="{ name: 'home', hash: '#account' }" @click="closeMenu">
             {{ currentUser ? currentUser.fullName : 'Account' }}
           </RouterLink>

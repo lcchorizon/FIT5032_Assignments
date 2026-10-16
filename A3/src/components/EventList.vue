@@ -1,7 +1,8 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useCollection, useOwnRatings, saveRating } from '../data'
 import { errorMessage } from '../errors'
+import { eventTime } from '../eventDates'
 import { currentUser } from '../auth'
 
 const emit = defineEmits(['select-event'])
@@ -47,6 +48,11 @@ const selectEvent = (event) => {
   selectedEventId.value = event.id
   emit('select-event', event)
 }
+
+watch(events, (updated) => {
+  const selected = updated.find((event) => event.id === selectedEventId.value)
+  if (selected) emit('select-event', selected)
+})
 
 const getAverageRating = (event) => event.ratingCount ? (event.ratingTotal / event.ratingCount).toFixed(1) : null
 const getUserRating = (eventId) => ratings.value[eventId] || 0
@@ -142,7 +148,7 @@ const rateEvent = async (eventId, score) => {
         <dl class="event-details mb-3">
           <div>
             <dt>Date</dt>
-            <dd>{{ event.date }}</dd>
+            <dd>{{ eventTime(event.startAt, event.endAt) }}</dd>
           </div>
           <div>
             <dt>Location</dt>

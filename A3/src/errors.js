@@ -8,6 +8,8 @@ export const errorMessage = (error) => {
     'auth/weak-password': 'Choose a stronger password with at least 8 characters.',
     'auth/too-many-requests': 'Too many attempts. Please wait before trying again.',
     'auth/network-request-failed': 'Could not connect. Check your connection and try again.',
+    'functions/aborted': 'Another booking changed at the same time. Please try again.',
+    'functions/deadline-exceeded': 'The request timed out. Check My bookings before trying again.',
     'functions/unavailable': 'The service is unavailable. Please try again shortly.',
     'functions/unauthenticated': 'Please log in to continue.',
     'permission-denied': 'You do not have access to these records.',
@@ -15,6 +17,6 @@ export const errorMessage = (error) => {
   }
   if (messages[error?.code]) return messages[error.code]
   if (['functions/invalid-argument', 'functions/failed-precondition',
-    'functions/already-exists', 'functions/not-found'].includes(error?.code)) return error.message
+    'functions/already-exists', 'functions/not-found', 'functions/resource-exhausted'].includes(error?.code)) return error.message.replace(/\s*\[\d{3}\]$/, '')
   return 'The request could not be completed. Please try again.'
 }

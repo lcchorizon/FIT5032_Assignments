@@ -1,8 +1,9 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { computed, onScopeDispose, ref, watch } from 'vue'
 import { currentUser } from '../auth'
-import { registerInterest } from '../data'
+import { bookEvent } from '../data'
 import { errorMessage } from '../errors'
+import { eventTime } from '../eventDates'
 
 const props = defineProps({
   selectedEvent: {
@@ -11,6 +12,10 @@ const props = defineProps({
   }
 })
 
+const now = ref(Date.now())
+const clock = setInterval(() => { now.value = Date.now() }, 30000)
+onScopeDispose(() => clearInterval(clock))
+const unavailable = computed(() => props.selectedEvent && (Date.parse(props.selectedEvent.startAt) <= now.value || props.selectedEvent.availablePlaces < 1))
 const isSubmitting = ref(false)
 const submitError = ref('')
 
@@ -125,17 +130,19 @@ const submitForm = async () => {
     return
   }
 
+  const event = props.selectedEvent
+  const count = formData.value.participants
   isSubmitting.value = true
   try {
-    await registerInterest({
-      eventId: props.selectedEvent.id,
+    await bookEvent({
+      eventId: event.id,
       fullName: formData.value.fullName.trim(),
       participants: formData.value.participants,
       experienceLevel: formData.value.experienceLevel,
       termsAccepted: formData.value.termsAccepted,
     })
     clearForm()
-    successMessage.value = `Your interest in ${props.selectedEvent.title} was saved. A place has not been reserved yet.`
+    successMessage.value = `Booking confirmed for ${event.title}: ${count} place(s) reserved. You can see or cancel it in My bookings.`
   } catch (error) {
     submitError.value = errorMessage(error)
   } finally {
@@ -175,7 +182,7 @@ watch(() => props.selectedEvent?.id, () => {
   <div v-if="!selectedEvent" class="content-panel">
     <div class="row align-items-center g-3">
       <div class="col-md-8">
-        <h3 class="h5 fw-semibold mb-2">Register your interest</h3>
+        <h3 class="h5 fw-semibold mb-2">Book an activity</h3>
         <p class="text-secondary mb-0">Select an activity above to begin registration.</p>
       </div>
       <div class="col-md-4 text-md-end">
@@ -189,16 +196,19 @@ watch(() => props.selectedEvent?.id, () => {
       <div>
         <h3 class="h5 fw-semibold mb-2">{{ selectedEvent.title }}</h3>
         <p class="text-secondary mb-0">
-          {{ selectedEvent.date }} at {{ selectedEvent.location }}
+          {{ eventTime(selectedEvent.startAt, selectedEvent.endAt) }} · {{ selectedEvent.location }}
         </p>
       </div>
       <span class="status-badge">Event selected</span>
     </div>
 
-    <p v-if="!currentUser" class="alert alert-info">Please log in above to register your interest.</p>
-    <p class="text-secondary">This saves your interest only. It does not reserve a place.</p>
+    <p><strong>{{ selectedEvent.availablePlaces }}</strong> places available</p>
+    <p v-if="unavailable" class="alert alert-warning" role="status">This activity is full or has already started. Choose another event.</p>
+    <p v-if="!currentUser" class="alert alert-info">Please log in to book this activity.</p>
+    <p class="text-secondary">We check availability and any overlapping bookings before confirming your place.</p>
+    <RouterLink v-if="!currentUser" class="btn btn-success mb-3" :to="{ name: 'home', hash: '#account', query: { reason: 'login-required', redirect: '/calendar?event=' + selectedEvent.id } }">Log in to book</RouterLink>
     <form v-if="currentUser" novalidate @submit.prevent="submitForm">
-      <fieldset :disabled="isSubmitting">
+      <fieldset :disabled="isSubmitting || unavailable">
         <legend class="visually-hidden">Registration details</legend>
       <div class="row g-3">
         <div class="col-md-6">
@@ -210,10 +220,12 @@ watch(() => props.selectedEvent?.id, () => {
             maxlength="50"
             class="form-control"
             :class="{ 'is-invalid': errors.fullName }"
+            :aria-invalid="Boolean(errors.fullName)"
+            :aria-describedby="errors.fullName ? 'booking-fullName-error' : undefined"
             @blur="validateFullName(true)"
             @input="validateFullName(false)"
           >
-          <div v-if="errors.fullName" class="invalid-feedback">{{ errors.fullName }}</div>
+          <div v-if="errors.fullName" id="booking-fullName-error" class="invalid-feedback">{{ errors.fullName }}</div>
         </div>
 
         <div class="col-md-6">
@@ -226,10 +238,12 @@ watch(() => props.selectedEvent?.id, () => {
             maxlength="100"
             class="form-control"
             :class="{ 'is-invalid': errors.email }"
+            :aria-invalid="Boolean(errors.email)"
+            :aria-describedby="errors.email ? 'booking-email-error' : undefined"
             @blur="validateEmail(true)"
             @input="validateEmail(false)"
           >
-          <div v-if="errors.email" class="invalid-feedback">{{ errors.email }}</div>
+          <div v-if="errors.email" id="booking-email-error" class="invalid-feedback">{{ errors.email }}</div>
         </div>
 
         <div class="col-md-6">
@@ -242,10 +256,12 @@ watch(() => props.selectedEvent?.id, () => {
             max="5"
             class="form-control"
             :class="{ 'is-invalid': errors.participants }"
+            :aria-invalid="Boolean(errors.participants)"
+            :aria-describedby="errors.participants ? 'booking-participants-error' : undefined"
             @blur="validateParticipants(true)"
             @input="validateParticipants(false)"
           >
-          <div v-if="errors.participants" class="invalid-feedback">
+          <div v-if="errors.participants" id="booking-participants-error" class="invalid-feedback">
             {{ errors.participants }}
           </div>
         </div>
@@ -257,6 +273,8 @@ watch(() => props.selectedEvent?.id, () => {
             v-model="formData.experienceLevel"
             class="form-select"
             :class="{ 'is-invalid': errors.experienceLevel }"
+            :aria-invalid="Boolean(errors.experienceLevel)"
+            :aria-describedby="errors.experienceLevel ? 'booking-experienceLevel-error' : undefined"
             @change="validateExperience(true)"
           >
             <option disabled value="">Select an experience level</option>
@@ -264,7 +282,7 @@ watch(() => props.selectedEvent?.id, () => {
             <option value="Some experience">Some experience</option>
             <option value="Experienced">Experienced</option>
           </select>
-          <div v-if="errors.experienceLevel" class="invalid-feedback">
+          <div v-if="errors.experienceLevel" id="booking-experienceLevel-error" class="invalid-feedback">
             {{ errors.experienceLevel }}
           </div>
         </div>
@@ -277,12 +295,14 @@ watch(() => props.selectedEvent?.id, () => {
               type="checkbox"
               class="form-check-input"
               :class="{ 'is-invalid': errors.termsAccepted }"
+            :aria-invalid="Boolean(errors.termsAccepted)"
+            :aria-describedby="errors.termsAccepted ? 'booking-termsAccepted-error' : undefined"
               @change="validateTerms(true)"
             >
             <label for="termsAccepted" class="form-check-label">
               I confirm that I have checked the event date and location.
             </label>
-            <div v-if="errors.termsAccepted" class="invalid-feedback d-block">
+            <div v-if="errors.termsAccepted" id="booking-termsAccepted-error" class="invalid-feedback d-block">
               {{ errors.termsAccepted }}
             </div>
           </div>
@@ -295,7 +315,7 @@ watch(() => props.selectedEvent?.id, () => {
 
       <p v-if="submitError" class="alert alert-danger mt-3" role="alert">{{ submitError }}</p>
       <div class="d-flex flex-wrap gap-2 mt-4">
-        <button type="submit" class="btn btn-success">{{ isSubmitting ? 'Saving…' : 'Register interest' }}</button>
+        <button type="submit" class="btn btn-success">{{ isSubmitting ? 'Confirming…' : 'Book event' }}</button>
         <button type="button" class="btn btn-outline-secondary" @click="clearForm">
           Clear form
         </button>

@@ -56,6 +56,7 @@ const filteredRegistrations = computed(() => {
         <Column field="eventTitle" header="Event" sortable />
         <Column field="fullName" header="Full name" sortable />
         <Column field="email" header="Email" sortable />
+        <Column field="status" header="Status" sortable />
         <Column field="participants" header="Participants" sortable />
         <Column field="experienceLevel" header="Experience" sortable />
         <template #empty>No registration records match your search.</template>
