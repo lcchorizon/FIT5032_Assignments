@@ -27,6 +27,11 @@ const eventsByDay = computed(() => {
   return result
 })
 const selectedEvents = computed(() => eventsByDay.value[selectedDay.value] || [])
+// Put the visible day and activity count first so speech input matches the button label.
+const dayLabel = (day) => {
+  const count = (eventsByDay.value[day.key] || []).length
+  return `${day.day}${count ? ` ${count} activities` : ''}, ${day.key}`
+}
 const selectedLabel = computed(() => new Intl.DateTimeFormat('en-AU', {
   weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC',
 }).format(new Date(`${selectedDay.value}T12:00:00Z`)))
@@ -89,13 +94,13 @@ watch(() => props.selectedEventId, (id) => {
           <button
             type="button"
             :class="{ 'calendar-outside': !day.inMonth, 'calendar-selected': selectedDay === day.key, 'calendar-today': day.key === today }"
-            :aria-label="`${day.key}, ${(eventsByDay[day.key] || []).length} activities`"
+            :aria-label="dayLabel(day)"
             :aria-pressed="selectedDay === day.key"
             :aria-current="day.key === today ? 'date' : undefined"
             @click="selectedDay = day.key"
           >
             <span>{{ day.day }}</span>
-            <small v-if="eventsByDay[day.key]?.length" class="calendar-event-count">{{ eventsByDay[day.key].length }}<span class="visually-hidden"> activities</span></small>
+            <small v-if="eventsByDay[day.key]?.length" class="calendar-event-count">{{ ` ${eventsByDay[day.key].length}` }}<span class="visually-hidden"> activities</span></small>
           </button>
         </li>
       </ol>
@@ -111,7 +116,7 @@ watch(() => props.selectedEventId, (id) => {
         <p><strong>{{ event.availablePlaces }}</strong> places available</p>
         <button
           class="btn btn-success" type="button"
-          :aria-label="`Choose ${event.title}`"
+          :aria-label="`${selectedEventId === event.id ? 'Selected' : 'Choose event'}: ${event.title}`"
           :aria-pressed="selectedEventId === event.id"
           @click="chooseEvent(event)"
         >{{ selectedEventId === event.id ? 'Selected' : 'Choose event' }}</button>

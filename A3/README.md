@@ -131,7 +131,7 @@ I use the Resend email API from a callable Cloud Function. A member can request 
 
 The PDF contains the booking reference, activity, name, account email, Melbourne times, location and number of participants. The backend has a separate copy of the licensed Noto Sans SC font because Firebase deploys only the functions folder.
 
-Before the email function can be deployed, an operator must configure the provider:
+The email function supports a configured provider and a disabled state. To configure or replace the provider:
 
 1. Create a Resend API key. For general use, verify a sending domain in Resend and choose an address from that domain. The `onboarding@resend.dev` sender only allows tests to the Resend account owner's email.
 2. Store the key through the interactive secret prompt. Do not put the key in a frontend variable or paste it into a command that will be saved in shell history:
@@ -143,7 +143,7 @@ Before the email function can be deployed, an operator must configure the provid
 3. Copy `functions/.env.example` to `functions/.env.fit5032-66c61`, set `GREENCONNECT_EMAIL_FROM` to the approved sender and set `GREENCONNECT_EMAIL_ENABLED=true`. The real configuration file is ignored by Git. Leave this flag false when no provider is configured; the other functions can then deploy normally without a mail secret.
 4. Run the build and deployment commands above, then use a verified account with a confirmed booking to request an email. Check the receiving inbox and open the PDF before recording a successful delivery.
 
-The email controls are enabled locally with emulators. They stay hidden in production until `VITE_BOOKING_EMAIL_ENABLED=true` is set and the frontend is rebuilt after provider setup. This lets the other features be reviewed while live email is still pending.
+The email controls are enabled locally with emulators. Production controls require `VITE_BOOKING_EMAIL_ENABLED=true` and a rebuilt frontend. The current demonstration uses Resend's `onboarding@resend.dev` sender with `VITE_BOOKING_EMAIL_TEST_MODE=true`, which displays its recipient restriction. This sender can deliver only to the Resend account owner. A verified sending domain is needed before offering delivery to all members. Firebase account verification remains available independently of this feature flag.
 
 Requests share a private Firestore mail record for each booking confirmation and recipient. Concurrent requests use a short lease. The provider receives the same idempotency key and stored payload after a network error. Accepted requests return their existing result. Unconfirmed requests stop retrying after 23 hours, before Resend's 24-hour idempotency window ends. A member can attempt one new submission per minute and five per UTC day. Rebooking after cancellation creates a new confirmation version.
 
@@ -187,8 +187,10 @@ Chart library documentation: [Chart.js interactions](https://www.chartjs.org/doc
 
 The application is deployed at https://greenconnect-a3-66c61.web.app. Final checks include ESLint, 22 unit tests, 24 Firebase emulator integration tests and a production build. The emulator mail tests use a mock transport; they do not send real messages.
 
-Booking email remains disabled until a provider key and verified sender are configured. The homepage automated accessibility scan reported no violations in the selected WCAG 2.1 A/AA rules, with incomplete items requiring manual review. This is scoped evidence rather than a full conformance assessment. Administrator workflows were checked locally; production positive access must use the existing authorised account.
+Booking email is deployed with a Sending access key stored in Secret Manager and the provider's restricted test sender. Production administrator access was checked using the existing authorised account. Accessibility review covered the homepage, calendar, event table, map, administrator records and dashboard. The review fixed calendar accessible names, dashboard definition-list markup, table link contrast and keyboard focus on invalid forms. Automated checks still contain incomplete items needing human judgement; this is scoped evidence rather than a full conformance assessment.
 
 Compatible dependency patches were applied for the final build. The dependency audit still reports 12 transitive findings (4 moderate and 8 high). Suggested remaining fixes include incompatible package changes, so they have not been applied automatically. The frontend build also reports large export and chart chunks, including the Unicode font loaded for PDF export.
 
 The report, revision notes, verification evidence and submission archives are prepared locally under `submission/` and `evidence/`. They are excluded from Git, along with local configuration and the implementation plan. No live credentials are included in the source package.
+
+The final deployed email test returned acceptance, Resend showed Delivered, and the PDF receipt was opened in the authorised Monash mailbox spam folder. This proves the tested account flow with the restricted sender; general delivery still requires domain verification. Tutor repository access was confirmed by the student.

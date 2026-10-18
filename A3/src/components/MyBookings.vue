@@ -5,7 +5,7 @@ import { currentUser } from '../auth'
 import { cancelBooking, sendBookingEmail, useCollection } from '../data'
 import { errorMessage } from '../errors'
 import { eventTime } from '../eventDates'
-import { bookingEmailEnabled } from '../features'
+import { bookingEmailEnabled, bookingEmailTestMode } from '../features'
 
 const { rows, loading, error } = useCollection('registrations', { owned: true })
 // Sort a copy of the listener rows so the shared data is not changed.
@@ -65,6 +65,7 @@ const statusLabel = (status) => ({ confirmed: 'Confirmed', cancelled: 'Cancelled
       <p v-if="!currentUser">Log in to see your bookings.</p>
       <template v-else>
         <p v-if="bookingEmailEnabled">Booking emails go to {{ currentUser.email }}. One confirmation is submitted for each booking. Verify your email in Your account before using this option.</p>
+        <p v-if="bookingEmailEnabled && bookingEmailTestMode" class="alert alert-info">Email is using the service provider's test sender. Only the service owner's verified account can receive confirmations until a sending domain is configured.</p>
         <p v-if="loading" role="status">Loading your bookings…</p>
         <p v-if="error || actionError" class="alert alert-danger" role="alert">{{ error || actionError }}</p>
         <p v-if="status" class="alert alert-success" role="status">{{ status }}</p>
@@ -82,7 +83,7 @@ const statusLabel = (status) => ({ confirmed: 'Confirmed', cancelled: 'Cancelled
               <button
                 v-if="bookingEmailEnabled && booking.status === 'confirmed'" class="btn btn-outline-success" type="button"
                 :disabled="Boolean(emailing) || Boolean(cancelling) || !currentUser.emailVerified"
-                :aria-label="`Email confirmation for ${booking.eventTitle}`" @click="emailBooking(booking)"
+                :aria-label="`${emailing === booking.id ? 'Submitting email…' : 'Email confirmation (PDF)'} for ${booking.eventTitle}`" @click="emailBooking(booking)"
               >{{ emailing === booking.id ? 'Submitting email…' : 'Email confirmation (PDF)' }}</button>
               <button
                 v-if="booking.status === 'confirmed' && Date.parse(booking.startAt) > now && confirmId !== booking.id"

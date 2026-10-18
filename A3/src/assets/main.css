@@ -958,6 +958,12 @@ a {
 .skip-link { position: fixed; top: -5rem; left: 1rem; z-index: 2000; background: white; color: #174b35; padding: .75rem 1rem; }
 .skip-link:focus { top: 1rem; }
 :focus-visible { outline: 3px solid #a54d00; outline-offset: 3px; }
+/* Bootstrap resets outlines on controls; keep the same clear ring for keyboard focus. */
+#app .form-control:focus-visible, #app .form-select:focus-visible, #app .form-check-input:focus-visible, #app .btn:focus-visible {
+  outline: 3px solid #a54d00;
+  outline-offset: 3px;
+  box-shadow: none;
+}
 fieldset { min-width: 0; }
 
 /* The calendar grid and the selected day share the available width on desktop. */
@@ -1016,6 +1022,9 @@ fieldset { min-width: 0; }
 /* Dashboard totals stay separate from the date-filtered chart analysis. */
 .dashboard-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin: 1.5rem 0; }
 .dashboard-metrics dd { font-size: 2.2rem; font-weight: 700; color: var(--green-800); margin: .5rem 0; }
+.dashboard-metrics dd.dashboard-detail { font-size: 1rem; font-weight: 400; color: var(--ink); margin: 0; }
+/* Keep small table links readable on both white and shaded rows. */
+.records-data-table a { color: #175d3c; }
 .dashboard-metrics dt { font-weight: 600; }
 .dashboard-summary { display: flex; flex-wrap: wrap; gap: 1rem 3rem; }
 .dashboard-summary dd { font-size: 1.3rem; margin: .3rem 0 0; }

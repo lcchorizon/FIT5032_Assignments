@@ -1,6 +1,6 @@
 <script setup>
 // Collect booking details and show validation feedback before asking the server to reserve places.
-import { computed, onScopeDispose, ref, watch } from 'vue'
+import { computed, nextTick, onScopeDispose, ref, watch } from 'vue'
 import { currentUser } from '../auth'
 import { bookEvent } from '../data'
 import { errorMessage } from '../errors'
@@ -20,6 +20,7 @@ onScopeDispose(() => clearInterval(clock))
 const unavailable = computed(() => props.selectedEvent && (Date.parse(props.selectedEvent.startAt) <= now.value || props.selectedEvent.availablePlaces < 1))
 const isSubmitting = ref(false)
 const submitError = ref('')
+const bookingForm = ref(null)
 
 const formData = ref({
   fullName: '',
@@ -131,6 +132,9 @@ const submitForm = async () => {
     !experienceIsValid ||
     !termsAreValid
   ) {
+    // Focus the first invalid input after Vue adds its linked error description.
+    await nextTick()
+    bookingForm.value?.querySelector('[aria-invalid="true"]')?.focus()
     return
   }
 
@@ -212,7 +216,7 @@ watch(() => props.selectedEvent?.id, () => {
     <p v-if="!currentUser" class="alert alert-info">Please log in to book this activity.</p>
     <p class="text-secondary">We check availability and any overlapping bookings before confirming your place.</p>
     <RouterLink v-if="!currentUser" class="btn btn-success mb-3" :to="{ name: 'home', hash: '#account', query: { reason: 'login-required', redirect: '/calendar?event=' + selectedEvent.id } }">Log in to book</RouterLink>
-    <form v-if="currentUser" novalidate @submit.prevent="submitForm">
+    <form v-if="currentUser" ref="bookingForm" novalidate @submit.prevent="submitForm">
       <fieldset :disabled="isSubmitting || unavailable">
         <legend class="visually-hidden">Registration details</legend>
       <div class="row g-3">

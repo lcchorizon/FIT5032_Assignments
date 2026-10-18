@@ -1,10 +1,9 @@
 <script setup>
 // Login and registration interface carried over from A1.3, now connected to Firebase Authentication.
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { authError, authLoading, currentUser, loginUser, logoutUser, reconnectUser, registerUser } from '../auth'
 import EmailVerification from './EmailVerification.vue'
-import { bookingEmailEnabled } from '../features'
 
 const route = useRoute()
 const router = useRouter()
@@ -18,6 +17,7 @@ const formData = ref({
 })
 const errors = ref({})
 const statusMessage = ref('')
+const accountForm = ref(null)
 
 const clearForm = () => {
   formData.value = {
@@ -82,7 +82,12 @@ const validateForm = () => {
 const submitForm = async () => {
   statusMessage.value = ''
 
-  if (!validateForm()) return
+  if (!validateForm()) {
+    // Wait for error descriptions to render before moving keyboard focus to the first error.
+    await nextTick()
+    accountForm.value?.querySelector('[aria-invalid="true"]')?.focus()
+    return
+  }
 
   isSubmitting.value = true
 
@@ -149,7 +154,7 @@ const handleLogout = async () => {
         <p class="mb-1"><strong>Email:</strong> {{ currentUser.email }}</p>
         <p><strong>Role:</strong> <span class="role-badge">{{ currentUser.role }}</span></p>
         <p class="text-secondary">Your login will remain available when this page is refreshed.</p>
-        <EmailVerification v-if="bookingEmailEnabled" />
+        <EmailVerification />
         <div v-if="statusMessage" class="alert alert-success" role="status">
           {{ statusMessage }}
         </div>
@@ -185,7 +190,7 @@ const handleLogout = async () => {
           }}
         </p>
 
-        <form novalidate @submit.prevent="submitForm">
+        <form ref="accountForm" novalidate @submit.prevent="submitForm">
           <div v-if="route.query.reason === 'login-required'" class="alert alert-warning">
             Please log in to continue.
           </div>

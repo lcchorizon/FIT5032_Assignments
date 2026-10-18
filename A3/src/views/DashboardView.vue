@@ -170,24 +170,24 @@ onScopeDispose(() => {
           <div class="content-panel">
             <dt>GreenConnect accounts</dt>
             <dd>{{ snapshot.accounts.total }}</dd>
-            <p class="mb-0">
+            <dd class="dashboard-detail">
               {{ snapshot.accounts.admins }} admin(s) · {{ snapshot.accounts.members }} member(s)
-            </p>
+            </dd>
           </div>
           <div class="content-panel">
             <dt>Activities</dt>
             <dd>{{ overview.events }}</dd>
-            <p class="mb-0">{{ overview.upcoming }} upcoming</p>
+            <dd class="dashboard-detail">{{ overview.upcoming }} upcoming</dd>
           </div>
           <div class="content-panel">
             <dt>Confirmed bookings</dt>
             <dd>{{ overview.confirmed }}</dd>
-            <p class="mb-0">{{ overview.participants }} reserved participant places</p>
+            <dd class="dashboard-detail">{{ overview.participants }} reserved participant places</dd>
           </div>
           <div class="content-panel">
             <dt>Places still available</dt>
             <dd>{{ overview.remaining }}</dd>
-            <p class="mb-0">Across upcoming activities</p>
+            <dd class="dashboard-detail">Across upcoming activities</dd>
           </div>
         </dl>
         <div class="content-panel mb-4">
