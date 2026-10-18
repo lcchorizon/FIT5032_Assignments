@@ -1,3 +1,4 @@
+// Prepare example exports for inspection and check their page counts. This does not prove live data access.
 import { readFile, mkdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { PDFDocument } from 'pdf-lib'
@@ -19,6 +20,7 @@ for (const [id, title, rows, columns, description] of [
   const file = join(output, `${id}.pdf`)
   await writeFile(file, result.bytes)
   await writeFile(join(output, `${id}.csv`), tableCsv(ordered, columns), 'utf8')
+  // Reload the generated PDF as a structural check. Visual review is still needed for readable layout.
   const document = await PDFDocument.load(result.bytes)
   if (document.getPageCount() < 2 || result.replacements) throw new Error('PDF export did not preserve the expected multipage example data.')
   console.log(`${id}: ${rows.length} rows, ${document.getPageCount()} PDF pages; CSV and PDF saved for inspection.`)

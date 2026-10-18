@@ -1,8 +1,10 @@
+// Build a table PDF in the browser from the same filtered rows used on screen.
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import fontkit from '@pdf-lib/fontkit'
 import { cellText } from './tableData.js'
 
 let fontPromise
+// Cache the font download and allow a later retry if the first download fails.
 export const loadExportFont = () => {
   if (!fontPromise) {
     fontPromise = fetch(new URL('./assets/fonts/NotoSansSC-Regular.ttf', import.meta.url)).then((response) => {
@@ -14,6 +16,7 @@ export const loadExportFont = () => {
 }
 
 const clean = (text) => String(text ?? '').normalize('NFC').replace(/[\p{Cc}\p{Cf}]/gu, ' ')
+// Measure text before drawing it so long values wrap inside the column width.
 const wrap = (text, font, size, width) => {
   const lines = []
   let line = ''
@@ -37,13 +40,17 @@ export const createTablePdf = async ({ title, rows, columns, description = '', s
   if (!rows.length) throw new Error('There are no matching records to export.')
   const document = await PDFDocument.create()
   document.registerFontkit(fontkit)
+  // Use Helvetica for Latin text and Noto Sans SC for characters such as Chinese names.
+  // Keeping Latin text in the standard font also avoids the custom-font spacing issue.
   const latinFont = await document.embedFont(StandardFonts.Helvetica)
   const headingFont = await document.embedFont(StandardFonts.HelveticaBold)
   const latinCharacters = new Set(latinFont.getCharacterSet())
   const rawBody = rows.map((row) => columns.map((column) => clean(cellText(row, column))))
   const needsCustomFont = Array.from(rawBody.flat().join('') + description + summary).some((character) => !latinCharacters.has(character.codePointAt(0)))
+  // Only fetch and embed the larger font when the exported text needs it. Subsetting keeps the PDF smaller.
   const customFont = needsCustomFont ? await document.embedFont(fontBytes || await loadExportFont(), { subset: true }) : null
   const characters = new Set([...latinCharacters, ...(customFont?.getCharacterSet() || [])])
+  // A line can contain both fonts. Group neighbouring characters so each part uses the right font and width.
   const runs = (text) => {
     const result = []
     for (const character of Array.from(text)) {
@@ -63,6 +70,7 @@ export const createTablePdf = async ({ title, rows, columns, description = '', s
     }
   }
   let replacements = false
+  // Unsupported symbols become ? with a notice. CSV remains available with the original text.
   const safe = (value) => Array.from(clean(value)).map((character) => {
     if (characters.has(character.codePointAt(0))) return character
     replacements = true
@@ -98,6 +106,7 @@ export const createTablePdf = async ({ title, rows, columns, description = '', s
     })
     y -= rowHeight
   }
+  // Repeat the title, filter summary and column headings so each printed page can be understood on its own.
   const newPage = () => {
     page = document.addPage([width, height])
     page.drawText('GreenConnect', { x: margin, y: height - 35, size: 11, font: headingFont, color: rgb(.1, .28, .19) })
@@ -114,6 +123,7 @@ export const createTablePdf = async ({ title, rows, columns, description = '', s
     const lines = cells.map((text, column) => wrap(text, font, fontSize, widths[column] - 12))
     const rowHeight = Math.max(...lines.map((value) => value.length)) * lineHeight + 12
     if (rowHeight > height - 210 - summaryLines.length * 11) throw new Error('One record is too long for the PDF layout. Please export it as CSV.')
+    // Start a page before the row reaches the footer, or after ten rows.
     if (y - rowHeight < 38 || rowsOnPage === 10) { newPage(); rowsOnPage = 0 }
     drawCells(lines, rowHeight, false, index % 2 === 1)
     rowsOnPage += 1

@@ -1,3 +1,4 @@
+// Download content already prepared in memory without uploading a file to another service.
 export const downloadFile = (content, type, name) => {
   const url = URL.createObjectURL(new Blob([content], { type }))
   const link = document.createElement('a')
@@ -6,5 +7,6 @@ export const downloadFile = (content, type, name) => {
   document.body.append(link)
   link.click()
   link.remove()
+  // Give the browser time to start the download before releasing its temporary object URL.
   setTimeout(() => URL.revokeObjectURL(url), 30000)
 }

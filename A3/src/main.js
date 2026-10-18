@@ -1,3 +1,4 @@
+// Start the Vue app with the existing router, Bootstrap styles and PrimeVue theme.
 import './assets/main.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 

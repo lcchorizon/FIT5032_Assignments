@@ -1,9 +1,11 @@
+// Create the Firebase clients once. Local development can use emulators instead of cloud data.
 import { initializeApp } from 'firebase/app'
 import { connectAuthEmulator, getAuth } from 'firebase/auth'
 import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore'
 import { connectFunctionsEmulator, getFunctions } from 'firebase/functions'
 
 export const useEmulators = import.meta.env.VITE_USE_EMULATORS === 'true'
+// The demo settings are only used when emulator mode is explicitly enabled.
 const config = useEmulators ? {
   apiKey: 'demo-greenconnect-key',
   authDomain: 'demo-greenconnect-a3.firebaseapp.com',
@@ -16,6 +18,7 @@ const config = useEmulators ? {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 }
 
+// Avoid starting Firebase with incomplete example configuration values.
 export const firebaseConfigured = Object.values(config).every((value) =>
   typeof value === 'string' && value.length > 0 && !value.startsWith('replace-with'))
 const app = firebaseConfigured ? initializeApp(config) : null
@@ -23,6 +26,7 @@ export const auth = app ? getAuth(app) : null
 export const db = app ? getFirestore(app) : null
 export const functions = app ? getFunctions(app, import.meta.env.VITE_FUNCTIONS_REGION || 'us-central1') : null
 
+// Connect before any reads or sign-in calls. The demo project must not use production services.
 if (app && useEmulators) {
   connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true })
   connectFirestoreEmulator(db, '127.0.0.1', 8080)

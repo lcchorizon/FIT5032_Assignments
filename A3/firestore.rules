@@ -4,6 +4,7 @@ service cloud.firestore {
     function signedIn() {
       return request.auth != null;
     }
+    // A profile role field is not trusted here. Only an Auth custom claim grants admin reads.
     function admin() {
       return signedIn() && request.auth.token.get('greenconnectAdmin', false) == true;
     }
@@ -12,6 +13,7 @@ service cloud.firestore {
       allow read, write: if topLevel != 'greenconnect'
         && request.time < timestamp.date(2026, 10, 18);
     }
+    // Public events are readable by everyone. All booking writes go through checked Cloud Functions.
     match /greenconnect/v1 {
       match /events/{eventId} {
         allow read: if true;
@@ -21,6 +23,8 @@ service cloud.firestore {
           allow write: if false;
         }
       }
+      // Schedules, mail jobs, provider limits and place caches are backend data.
+      // Only schedules have an explicit match; the other collections are denied by default.
       match /schedules/{userId} {
         allow read, write: if false;
       }
@@ -29,6 +33,7 @@ service cloud.firestore {
         allow list: if admin();
         allow write: if false;
       }
+      // Members must query their own userId. Admins may read the registration table, but cannot write directly.
       match /registrations/{registrationId} {
         allow read: if signedIn() && (resource.data.userId == request.auth.uid || admin());
         allow write: if false;

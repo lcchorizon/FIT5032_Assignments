@@ -1,3 +1,4 @@
+// Check calendar dates and time overlap boundaries, including Melbourne timezone behaviour.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { intervalsOverlap } from '../functions/bookings.js'

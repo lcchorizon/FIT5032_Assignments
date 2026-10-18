@@ -1,3 +1,5 @@
+// Pure table helpers. These functions return results without changing the Firestore source rows.
+// Remove accents for searching, while keeping the original text for display and export.
 const normalise = (value) => String(value ?? '').normalize('NFKD').replace(/\p{M}/gu, '').toLocaleLowerCase('en-AU')
 const collator = new Intl.Collator('en-AU', { numeric: true, sensitivity: 'base' })
 
@@ -10,6 +12,7 @@ export const filterTable = (rows, columns, search = '', filters = {}) => {
   const global = normalise(search.trim())
   return rows.filter((row) => {
     const values = columns.map((column) => normalise(cellText(row, column)))
+    // Global search can match any column; every active column filter must also match.
     return (!global || values.some((value) => value.includes(global))) && columns.every((column, index) => {
       const filter = normalise((filters[column.key] || '').trim())
       return !filter || values[index].includes(filter)
@@ -21,6 +24,7 @@ export const sortTable = (rows, columns, sortKey, direction = 'asc') => {
   const column = columns.find((column) => column.key === sortKey)
   if (!column) return [...rows]
   const multiplier = direction === 'desc' ? -1 : 1
+  // Compare raw numeric/date values instead of their formatted text. Original indexes keep ties stable.
   return rows.map((row, index) => ({ row, index })).sort((a, b) => {
     let comparison
     if (column.type === 'number') comparison = Number(a.row[sortKey] ?? 0) - Number(b.row[sortKey] ?? 0)
@@ -30,6 +34,7 @@ export const sortTable = (rows, columns, sortKey, direction = 'asc') => {
   }).map(({ row }) => row)
 }
 
+// Clamp the page after filtering removes rows, so the user is not left on an empty later page.
 export const tablePage = (rows, requestedPage, size = 10) => {
   const pageCount = Math.max(1, Math.ceil(rows.length / size))
   const page = Math.min(Math.max(1, requestedPage), pageCount)
@@ -38,10 +43,12 @@ export const tablePage = (rows, requestedPage, size = 10) => {
 
 export const csvCell = (value) => {
   let text = String(value ?? '')
+  // Protect text that a spreadsheet may treat as a formula. Real numeric values remain numbers.
   if (typeof value !== 'number' && /^[\s\p{Cc}\p{Cf}]*[=+\-@]/u.test(text)) text = `'${text}`
   return `"${text.replaceAll('"', '""')}"`
 }
 
+// The UTF-8 byte-order mark helps spreadsheet apps recognise international text. Quotes protect commas and line breaks.
 export const tableCsv = (rows, columns) => '\uFEFF' + [
   columns.map((column) => csvCell(column.label)).join(','),
   ...rows.map((row) => columns.map((column) => csvCell(column.type === 'number' ? row[column.key] : cellText(row, column))).join(',')),

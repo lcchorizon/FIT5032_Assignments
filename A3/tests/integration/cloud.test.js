@@ -1,3 +1,4 @@
+// Check Firestore rules and callable booking behaviour in an isolated emulator project.
 import { after, before, test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
@@ -54,6 +55,8 @@ test('members cannot escalate role or read other members; owner queries work', a
   await assertFails(setDoc(doc(db, ...path('registrations', 'new')), { userId: 'alice' }))
   await assertFails(getDoc(doc(db, ...path('schedules', 'alice'))))
   await assertFails(setDoc(doc(db, ...path('schedules', 'alice')), { reservations: [] }))
+  await assertFails(getDoc(doc(db, ...path('mail', 'private-message'))))
+  await assertFails(setDoc(doc(db, ...path('mailLimits', 'alice')), { count: 0 }))
 })
 
 test('only a signed admin claim grants record access; admin client writes remain blocked', async () => {
@@ -61,6 +64,7 @@ test('only a signed admin claim grants record access; admin client writes remain
   await assertSucceeds(getDocs(collection(db, ...path('profiles'))))
   await assertSucceeds(getDocs(collection(db, ...path('registrations'))))
   await assertFails(setDoc(doc(db, ...path('profiles', 'alice')), { role: 'admin' }))
+  await assertFails(getDoc(doc(db, ...path('mail', 'private-message'))))
   const wrongClaim = environment.authenticatedContext('wrong', { admin: true }).firestore()
   await assertFails(getDocs(collection(wrongClaim, ...path('profiles'))))
 })

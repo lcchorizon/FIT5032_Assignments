@@ -1,4 +1,5 @@
 <script setup>
+// Collect booking details and show validation feedback before asking the server to reserve places.
 import { computed, onScopeDispose, ref, watch } from 'vue'
 import { currentUser } from '../auth'
 import { bookEvent } from '../data'
@@ -13,6 +14,7 @@ const props = defineProps({
 })
 
 const now = ref(Date.now())
+// Refresh the time check while the page stays open. The server checks the event time again before saving.
 const clock = setInterval(() => { now.value = Date.now() }, 30000)
 onScopeDispose(() => clearInterval(clock))
 const unavailable = computed(() => props.selectedEvent && (Date.parse(props.selectedEvent.startAt) <= now.value || props.selectedEvent.availablePlaces < 1))
@@ -37,6 +39,7 @@ const errors = ref({
 
 const successMessage = ref('')
 
+// Field validators can run without showing errors until the user interacts or submits.
 const validateFullName = (showError) => {
   const fullName = formData.value.fullName.trim()
 
@@ -114,6 +117,7 @@ const submitForm = async () => {
   submitError.value = ''
   if (!currentUser.value || !props.selectedEvent || isSubmitting.value) return
 
+  // Run every validator so the form can show all missing or invalid fields together.
   const fullNameIsValid = validateFullName(true)
   const emailIsValid = validateEmail(true)
   const participantsAreValid = validateParticipants(true)
@@ -134,6 +138,7 @@ const submitForm = async () => {
   const count = formData.value.participants
   isSubmitting.value = true
   try {
+    // Send only booking inputs. The server takes user ID and email from the authenticated request.
     await bookEvent({
       eventId: event.id,
       fullName: formData.value.fullName.trim(),

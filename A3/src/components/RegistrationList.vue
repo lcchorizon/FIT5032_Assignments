@@ -1,4 +1,5 @@
 <script setup>
+// Supply registration columns and the admin export check to the shared table.
 import { userHasRole } from '../auth'
 import { registrationColumns } from '../tableColumns'
 import InteractiveTable from './InteractiveTable.vue'
@@ -7,6 +8,7 @@ defineProps({
   registrations: { type: Array, required: true },
   examples: { type: Boolean, default: false },
 })
+// The UI rechecks the admin role before download. Firestore separately protects the underlying records.
 const canExport = () => userHasRole('admin')
 </script>
 

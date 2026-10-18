@@ -1,3 +1,4 @@
+// Check the server validators with valid international names and invalid booking inputs.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { validName, validId, validParticipants } from '../functions/validation.js'

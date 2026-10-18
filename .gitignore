@@ -48,4 +48,5 @@ A3/*-debug.log
 A3/test-results/
 
 A3/functions/.env*
+A3/functions/.secret.local
 !A3/functions/.env.example

@@ -1,3 +1,4 @@
+/* Shared box sizing, typography and default spacing used by the whole app. */
 *,
 *::before,
 *::after {

@@ -1,10 +1,12 @@
 <script setup>
+// Connect the reused activity cards to the booking form through one selected event.
 import { ref } from 'vue'
 import AccountAccess from '../components/AccountAccess.vue'
 import EventList from '../components/EventList.vue'
 import EventRegistrationForm from '../components/EventRegistrationForm.vue'
 import MyBookings from '../components/MyBookings.vue'
 
+// The event list emits upward; this page passes the selected object down to the registration form.
 const selectedEvent = ref(null)
 const selectEvent = (event) => {
   selectedEvent.value = event

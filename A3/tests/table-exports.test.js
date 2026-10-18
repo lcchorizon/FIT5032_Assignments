@@ -1,3 +1,4 @@
+// Check combined table filters, sort order, pagination and safe CSV output.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { filterTable, sortTable, tablePage, tableCsv, csvCell } from '../src/tableData.js'

@@ -1,4 +1,5 @@
 <script setup>
+// One table component supports both public events and private admin registration records.
 import { computed, onScopeDispose, ref, watch } from 'vue'
 import { cellText, filterTable, sortTable, tableCsv, tablePage, tableSummary } from '../tableData'
 import { downloadFile } from '../download'
@@ -22,12 +23,14 @@ const status = ref('')
 const exportError = ref('')
 let active = true
 onScopeDispose(() => { active = false })
+// The data flow is filter -> sort -> page. Exports use sorted rows before pagination.
 const filtered = computed(() => filterTable(props.rows, props.columns, search.value, filters.value))
 const sorted = computed(() => sortTable(filtered.value, props.columns, sortKey.value, sortDirection.value))
 const pagination = computed(() => tablePage(sorted.value, requestedPage.value))
 const summary = computed(() => tableSummary(props.columns, search.value, filters.value, sortKey.value, sortDirection.value))
 const start = computed(() => sorted.value.length ? (pagination.value.page - 1) * 10 + 1 : 0)
 const end = computed(() => Math.min(pagination.value.page * 10, sorted.value.length))
+// A new search or sort starts at page one and clears messages from the previous export.
 watch([search, filters, sortKey, sortDirection], () => { requestedPage.value = 1; status.value = ''; exportError.value = '' }, { deep: true })
 watch(() => pagination.value.page, (page) => { requestedPage.value = page })
 const sort = (key) => {
@@ -37,6 +40,7 @@ const sort = (key) => {
 const clear = () => { search.value = ''; filters.value = {} }
 const exportRows = async (format) => {
   if (!props.canExport() || !sorted.value.length || exporting.value) return
+  // Take a snapshot so a later filter change does not alter an export already being prepared.
   const rows = [...sorted.value]
   const currentSummary = summary.value
   exporting.value = true
@@ -46,6 +50,7 @@ const exportRows = async (format) => {
     if (format === 'csv') {
       downloadFile(tableCsv(rows, props.columns), 'text/csv;charset=utf-8', `greenconnect-${props.id}-${melbourneDay()}.csv`)
     } else {
+      // Load the larger PDF module only when requested. Recheck access after asynchronous work.
       const { createTablePdf } = await import('../pdfExport')
       if (!active || !props.canExport()) return
       const result = await createTablePdf({ title: props.title, rows, columns: props.columns, description: props.description, summary: currentSummary })

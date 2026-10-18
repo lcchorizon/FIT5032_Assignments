@@ -1,4 +1,5 @@
 <script setup>
+// Connect the calendar, booking form and personal bookings on a separate page.
 import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useCollection } from '../data'
@@ -8,11 +9,13 @@ import MyBookings from '../components/MyBookings.vue'
 
 const route = useRoute()
 const { rows: events, loading, error } = useCollection('events', { sort: 'startAt' })
+// Read the event query parameter so map and directory links can open a particular activity.
 const selectedId = ref(typeof route.query.event === 'string' ? route.query.event : null)
 const selectedEvent = computed(() => events.value.find((event) => event.id === selectedId.value) || null)
 const bookingPanel = ref(null)
 const selectEvent = async (event) => {
   selectedId.value = event.id
+  // Wait for Vue to update the selected form, then move focus to it for keyboard users.
   await nextTick()
   bookingPanel.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   bookingPanel.value?.focus({ preventScroll: true })

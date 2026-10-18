@@ -1,4 +1,5 @@
 <script setup>
+// Explain why the current account cannot open private administrator pages.
 import { currentUser } from '../auth'
 </script>
 
@@ -10,7 +11,7 @@ import { currentUser } from '../auth'
         <p class="section-label mb-2">Access denied</p>
         <h1>You do not have permission to view this page.</h1>
         <p>
-          The Records page contains participant information and can only be opened by an admin.
+          Registration records and the community dashboard are only available to an admin.
           <span v-if="currentUser">You are logged in as {{ currentUser.fullName }} with the
           <strong>{{ currentUser.role }}</strong> role.</span>
           <span v-else>Please log in with an authorised account to continue.</span>

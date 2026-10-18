@@ -1,3 +1,4 @@
+// Shared Firestore listeners and callable function wrappers used by the Vue components.
 import { onScopeDispose, ref, watch } from 'vue'
 import { collection, doc, onSnapshot, orderBy, query, where } from 'firebase/firestore'
 import { httpsCallable } from 'firebase/functions'
@@ -7,11 +8,13 @@ import { errorMessage } from './errors'
 
 export const dataPath = (...parts) => ['greenconnect', 'v1', ...parts]
 
+// Each component receives reactive rows, loading state and a readable subscription error.
 export const useCollection = (name, { owned = false, admin = false, sort = null } = {}) => {
   const rows = ref([])
   const loading = ref(true)
   const error = ref('')
   let unsubscribe = () => {}
+  // Replace the listener when the account or role changes. Clear old rows before checking the new access.
   const stop = watch(() => [currentUser.value?.id, currentUser.value?.role], () => {
     unsubscribe()
     rows.value = []
@@ -20,8 +23,10 @@ export const useCollection = (name, { owned = false, admin = false, sort = null 
     if (!db || (owned && !currentUser.value) || (admin && currentUser.value?.role !== 'admin')) return
     loading.value = true
     const filters = []
+    // An owner query matches the Firestore rule. Client filtering after downloading all records would expose them.
     if (owned) filters.push(where('userId', '==', currentUser.value.id))
     if (sort) filters.push(orderBy(sort))
+    // onSnapshot sends the initial data and later changes, such as a booking using the last place.
     unsubscribe = onSnapshot(query(collection(db, ...dataPath(name)), ...filters), (snapshot) => {
       rows.value = snapshot.docs.map((row) => {
         const data = row.data()
@@ -35,10 +40,12 @@ export const useCollection = (name, { owned = false, admin = false, sort = null 
       error.value = errorMessage(failure)
     })
   }, { immediate: true })
+  // Remove the listener when the component leaves the page so it cannot keep updating old state.
   onScopeDispose(() => { unsubscribe(); stop() })
   return { rows, loading, error }
 }
 
+// Listen to one private rating document per event for the current account only.
 export const useOwnRatings = (events) => {
   const ratings = ref({})
   const error = ref('')
@@ -59,6 +66,10 @@ export const useOwnRatings = (events) => {
   return { ratings, error }
 }
 
+// Callable wrappers keep backend names out of individual UI components. Firebase adds the current auth token.
 export const saveRating = (eventId, score) => httpsCallable(functions, 'greenconnectRateEvent')({ eventId, score })
 export const bookEvent = (details) => httpsCallable(functions, 'greenconnectBookEvent')(details)
 export const cancelBooking = (eventId) => httpsCallable(functions, 'greenconnectCancelBooking')({ eventId })
+export const sendBookingEmail = (eventId) => httpsCallable(functions, 'greenconnectSendBookingEmail')({ eventId })
+// Only an authenticated admin receives this snapshot; no account identities are returned for the charts.
+export const loadAdminDashboard = () => httpsCallable(functions, 'greenconnectAdminDashboard')({})

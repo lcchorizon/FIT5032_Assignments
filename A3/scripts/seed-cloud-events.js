@@ -1,3 +1,4 @@
+// Create missing cloud demonstration events without replacing an existing event or its booking count.
 import { createRequire } from 'node:module'
 import { readFile } from 'node:fs/promises'
 const require = createRequire(new URL('../functions/package.json', import.meta.url))
@@ -15,6 +16,7 @@ const events = JSON.parse(await readFile(new URL('../src/assets/json/events.json
 let created = 0
 for (const { id, ...event } of events) {
   const ref = root.collection('events').doc(id)
+  // Check existence inside a transaction so rerunning the script cannot reset live booking counts.
   await getFirestore().runTransaction(async (transaction) => {
     if (!(await transaction.get(ref)).exists) {
       transaction.create(ref, event)

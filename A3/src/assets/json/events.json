@@ -164,8 +164,8 @@
     "endAt": "2026-11-14T12:00:00+11:00",
     "capacity": 16,
     "bookedPlaces": 0,
-    "latitude": -37.81,
-    "longitude": 144.96,
+    "latitude": -37.788,
+    "longitude": 144.951,
     "ratingCount": 0,
     "ratingTotal": 0,
     "isDemo": true
@@ -183,8 +183,8 @@
     "endAt": "2026-11-17T12:00:00+11:00",
     "capacity": 12,
     "bookedPlaces": 0,
-    "latitude": -37.81,
-    "longitude": 144.96,
+    "latitude": -37.824,
+    "longitude": 145.001,
     "ratingCount": 0,
     "ratingTotal": 0,
     "isDemo": true
@@ -202,8 +202,8 @@
     "endAt": "2026-11-20T12:00:00+11:00",
     "capacity": 18,
     "bookedPlaces": 0,
-    "latitude": -37.81,
-    "longitude": 144.96,
+    "latitude": -37.915,
+    "longitude": 145.121,
     "ratingCount": 0,
     "ratingTotal": 0,
     "isDemo": true
@@ -221,8 +221,8 @@
     "endAt": "2026-11-24T12:00:00+11:00",
     "capacity": 20,
     "bookedPlaces": 0,
-    "latitude": -37.81,
-    "longitude": 144.96,
+    "latitude": -37.831,
+    "longitude": 144.912,
     "ratingCount": 0,
     "ratingTotal": 0,
     "isDemo": true

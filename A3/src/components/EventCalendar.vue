@@ -1,4 +1,5 @@
 <script setup>
+// Show the activity dates and emit the selected event to the parent booking page.
 import { computed, ref, watch } from 'vue'
 import { melbourneDay, monthDays, eventTime } from '../eventDates'
 
@@ -15,6 +16,7 @@ const days = computed(() => monthDays(year.value, month.value))
 const monthLabel = computed(() => new Intl.DateTimeFormat('en-AU', {
   month: 'long', year: 'numeric', timeZone: 'UTC',
 }).format(new Date(Date.UTC(year.value, month.value, 1))))
+// Group by Melbourne day once, then reuse the groups for date counts and the selected-day list.
 const eventsByDay = computed(() => {
   const result = {}
   props.events.forEach((event) => {
@@ -29,6 +31,7 @@ const selectedLabel = computed(() => new Intl.DateTimeFormat('en-AU', {
   weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC',
 }).format(new Date(`${selectedDay.value}T12:00:00Z`)))
 
+// Date arithmetic handles moving between December and January without a separate year check.
 const chooseMonth = (step) => {
   const date = new Date(Date.UTC(year.value, month.value + step, 1))
   year.value = date.getUTCFullYear()
@@ -45,6 +48,7 @@ const goToday = () => {
 const chooseEvent = (event) => {
   emit('select-event', event)
 }
+// On first load, open the requested activity or the next future event. Later live updates should not move the calendar.
 watch(() => props.events, (events) => {
   if (initialised || !events.length) return
   initialised = true

@@ -1,4 +1,5 @@
 <script setup>
+// Load public events and pass them to the reusable table with event columns.
 import InteractiveTable from '../components/InteractiveTable.vue'
 import { useCollection } from '../data'
 import { eventColumns } from '../tableColumns'
@@ -17,6 +18,7 @@ const { rows: events, loading, error } = useCollection('events', { sort: 'startA
       <p v-if="error" class="alert alert-danger" role="alert">{{ error }}</p>
       <InteractiveTable v-if="!loading && !error" id="events" title="Community events" :columns="eventColumns" :rows="events" description="Demonstration community activities. Dates and times use Melbourne time. Availability can change before your booking is confirmed." />
       <RouterLink class="btn btn-link mt-3" :to="{ name: 'home', hash: '#events' }">Browse activity cards</RouterLink>
+      <RouterLink class="btn btn-link mt-3" :to="{ name: 'map' }">Find activities on the map</RouterLink>
     </section>
   </main>
 </template>

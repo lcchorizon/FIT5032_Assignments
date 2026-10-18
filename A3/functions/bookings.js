@@ -1,7 +1,9 @@
+// Reserve and release places with Firestore transactions so competing requests stay consistent.
 import { FieldValue, getFirestore } from 'firebase-admin/firestore'
 import { HttpsError } from 'firebase-functions/v2/https'
 import { experienceLevels, validId, validName, validParticipants } from './validation.js'
 
+// Strict comparisons allow one activity to start exactly when the previous one ends.
 export const intervalsOverlap = (start, end, otherStart, otherEnd) =>
   start < otherEnd && end > otherStart
 
@@ -20,9 +22,12 @@ export const bookEvent = async (request) => {
   const db = getFirestore()
   const root = db.doc('greenconnect/v1')
   const eventRef = root.collection('events').doc(eventId)
+  // A deterministic document ID gives one booking record per account and event.
   const bookingRef = root.collection('registrations').doc(`${auth.uid}_${eventId}`)
   const scheduleRef = root.collection('schedules').doc(auth.uid)
 
+  // Read and write the event, booking and member schedule together.
+  // Firestore retries this callback if a competing request changes a document we read.
   return db.runTransaction(async (transaction) => {
     const [eventSnapshot, bookingSnapshot, scheduleSnapshot] = await transaction.getAll(eventRef, bookingRef, scheduleRef)
     const event = eventSnapshot.data()
@@ -34,16 +39,19 @@ export const bookEvent = async (request) => {
     if (bookingSnapshot.data()?.status === 'confirmed') {
       throw new HttpsError('already-exists', 'You already have a confirmed booking for this event.')
     }
+    // The schedule document is shared by all booking requests from this member, including different events.
     const reservations = scheduleSnapshot.data()?.reservations || []
     if (reservations.some((booking) => booking.eventId !== eventId &&
         intervalsOverlap(start, end, Date.parse(booking.startAt), Date.parse(booking.endAt)))) {
       throw new HttpsError('failed-precondition', 'This event overlaps with one of your confirmed bookings. Choose a different time or cancel the other booking first.')
     }
+    // Check remaining places inside the transaction. A number displayed earlier in the browser can be stale.
     const bookedPlaces = event.bookedPlaces ?? 0
     if (!Number.isInteger(event.capacity) || !Number.isInteger(bookedPlaces) || bookedPlaces < 0 ||
         participants > event.capacity - bookedPlaces) {
       throw new HttpsError('resource-exhausted', 'There are not enough places left for your group. Reduce the group size or choose another event.')
     }
+    // A cancelled booking can be replaced by a new confirmed version. confirmedAt identifies that confirmation.
     transaction.set(bookingRef, {
       userId: auth.uid, eventId, eventTitle: event.title, fullName: fullName.trim(),
       email: auth.token.email, participants, experienceLevel, status: 'confirmed',
@@ -61,6 +69,7 @@ export const bookEvent = async (request) => {
   })
 }
 
+// Cancellation checks ownership again on the server and releases capacity in the same transaction.
 export const cancelBooking = async (request) => {
   const auth = requireUser(request)
   const { eventId } = request.data || {}
@@ -75,6 +84,7 @@ export const cancelBooking = async (request) => {
     const [eventSnapshot, bookingSnapshot, scheduleSnapshot] = await transaction.getAll(eventRef, bookingRef, scheduleRef)
     const booking = bookingSnapshot.data()
     if (!booking || booking.userId !== auth.uid) throw new HttpsError('not-found', 'This booking could not be found.')
+    // Repeated cancellation returns the existing result and does not subtract places a second time.
     if (booking.status === 'cancelled') return { id: bookingRef.id, status: 'cancelled' }
     if (booking.status !== 'confirmed') {
       throw new HttpsError('failed-precondition', 'This record is an interest only. It has not reserved any places.')

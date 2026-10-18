@@ -12,7 +12,7 @@
     "lint:eslint": "eslint . --fix --cache",
     "format": "prettier --write --experimental-cli src/",
     "test": "node --test tests/*.test.js",
-    "test:emulators": "firebase emulators:exec --only auth,firestore,functions --project demo-greenconnect-a3 \"node --test --test-concurrency=1 tests/integration/*.test.js\"",
+    "test:emulators": "firebase emulators:exec --only auth,firestore,functions --project demo-greenconnect-a3 \"node --test --test-concurrency=1 tests/integration/*.test.js functions/tests/*.test.js\"",
     "emulators": "firebase emulators:start --only auth,firestore,functions --project demo-greenconnect-a3 --import=./emulator-data --export-on-exit=./emulator-data",
     "seed:emulators": "node scripts/seed-emulators.js",
     "deploy": "firebase deploy --only hosting:greenconnect,functions:greenconnect,firestore:rules"
@@ -21,7 +21,9 @@
     "@pdf-lib/fontkit": "^1.1.1",
     "@primeuix/themes": "^2.0.3",
     "bootstrap": "^5.3.8",
+    "chart.js": "^4.5.1",
     "firebase": "^12.2.1",
+    "leaflet": "^1.9.4",
     "pdf-lib": "^1.17.1",
     "primevue": "^4.0.0",
     "vue": "^3.5.40",

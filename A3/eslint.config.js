@@ -1,3 +1,4 @@
+// Lint browser code and Node scripts with the correct globals. Generated output and dependencies are excluded.
 import { defineConfig, globalIgnores } from 'eslint/config'
 import globals from 'globals'
 import js from '@eslint/js'

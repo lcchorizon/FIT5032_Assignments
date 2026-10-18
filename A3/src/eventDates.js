@@ -1,6 +1,8 @@
+// Use Melbourne time for activity dates, even when the visitor is in another timezone.
 const zone = 'Australia/Melbourne'
 const dayFormat = new Intl.DateTimeFormat('en-CA', { timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit' })
 
+// Build a YYYY-MM-DD key from Melbourne date parts rather than the browser's local day.
 export const melbourneDay = (value = new Date()) => {
   const date = new Date(value)
   if (!Number.isFinite(date.getTime())) return ''
@@ -18,6 +20,7 @@ export const eventTime = (start, end) => {
   return `${date}, ${time.format(startDate)} – ${endDay}${time.format(endDate)} (Melbourne time)`
 }
 
+// A fixed six-week grid starts on Monday. UTC arithmetic avoids daylight-saving shifts in these date-only cells.
 export const monthDays = (year, month) => {
   const first = new Date(Date.UTC(year, month, 1))
   const offset = (first.getUTCDay() + 6) % 7

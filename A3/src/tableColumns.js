@@ -1,6 +1,8 @@
+// Column definitions are shared by the screen table, CSV export and PDF export.
 import { eventTime } from './eventDates.js'
 
 const bookingStatus = { confirmed: 'Confirmed', cancelled: 'Cancelled', interest: 'Interest only' }
+// type controls sorting; format controls readable cell text; weight controls PDF column width.
 export const eventColumns = [
   { key: 'title', label: 'Event', weight: 1.7 },
   { key: 'category', label: 'Category', weight: 1 },

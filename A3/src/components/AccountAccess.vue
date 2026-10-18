@@ -1,7 +1,10 @@
 <script setup>
+// Login and registration interface carried over from A1.3, now connected to Firebase Authentication.
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { authError, authLoading, currentUser, loginUser, logoutUser, reconnectUser, registerUser } from '../auth'
+import EmailVerification from './EmailVerification.vue'
+import { bookingEmailEnabled } from '../features'
 
 const route = useRoute()
 const router = useRouter()
@@ -32,6 +35,7 @@ const changeMode = (newMode) => {
   clearForm()
 }
 
+// These checks give immediate feedback. Firebase and Cloud Functions make their own checks on submission.
 const validateForm = () => {
   const newErrors = {}
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -74,6 +78,7 @@ const validateForm = () => {
   return Object.keys(newErrors).length === 0
 }
 
+// Use the shared auth module so a successful login updates navigation and other components too.
 const submitForm = async () => {
   statusMessage.value = ''
 
@@ -144,6 +149,7 @@ const handleLogout = async () => {
         <p class="mb-1"><strong>Email:</strong> {{ currentUser.email }}</p>
         <p><strong>Role:</strong> <span class="role-badge">{{ currentUser.role }}</span></p>
         <p class="text-secondary">Your login will remain available when this page is refreshed.</p>
+        <EmailVerification v-if="bookingEmailEnabled" />
         <div v-if="statusMessage" class="alert alert-success" role="status">
           {{ statusMessage }}
         </div>

@@ -1,4 +1,5 @@
 <script setup>
+// Browse the live event cards, combine filters and submit the current member's rating.
 import { computed, ref, watch } from 'vue'
 import { useCollection, useOwnRatings, saveRating } from '../data'
 import { errorMessage } from '../errors'
@@ -28,6 +29,7 @@ const categories = [
   'Community Activity'
 ]
 
+// All active filters combine; changing one filter does not remove the others.
 const filteredEvents = computed(() => {
   return events.value.filter((event) => {
     const searchText = searchTerm.value.trim().toLowerCase()
@@ -49,6 +51,7 @@ const selectEvent = (event) => {
   emit('select-event', event)
 }
 
+// Refresh the selected activity in the parent when live availability changes.
 watch(events, (updated) => {
   const selected = updated.find((event) => event.id === selectedEventId.value)
   if (selected) emit('select-event', selected)
@@ -56,6 +59,7 @@ watch(events, (updated) => {
 
 const getAverageRating = (event) => event.ratingCount ? (event.ratingTotal / event.ratingCount).toFixed(1) : null
 const getUserRating = (eventId) => ratings.value[eventId] || 0
+// The backend uses one document per user and event, so changing a score updates the existing vote.
 const rateEvent = async (eventId, score) => {
   if (!currentUser.value || savingRating.value) return
   savingRating.value = eventId

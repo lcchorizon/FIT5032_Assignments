@@ -1,4 +1,5 @@
 <script setup>
+// Shared navigation and footer. RouterView displays the page for the current URL.
 import { ref } from 'vue'
 import { currentUser, userHasRole } from './auth'
 
@@ -35,6 +36,7 @@ const closeMenu = () => {
             Events
           </RouterLink>
           <RouterLink :to="{ name: 'calendar' }" @click="closeMenu">Calendar</RouterLink>
+          <RouterLink :to="{ name: 'map' }" @click="closeMenu">Map</RouterLink>
           <RouterLink :to="{ name: 'home', hash: '#account' }" @click="closeMenu">
             {{ currentUser ? currentUser.fullName : 'Account' }}
           </RouterLink>
@@ -42,6 +44,7 @@ const closeMenu = () => {
             Get involved
           </RouterLink>
           <RouterLink v-if="userHasRole('admin')" :to="{ name: 'records' }" @click="closeMenu">Records</RouterLink>
+          <RouterLink v-if="userHasRole('admin')" :to="{ name: 'dashboard' }" @click="closeMenu">Dashboard</RouterLink>
           <RouterLink
             class="navigation-action"
             :to="{ name: 'home', hash: '#events' }"

@@ -1,3 +1,4 @@
+// Create repeatable local examples. The fixed demo project and local hosts keep these accounts out of production.
 import { createRequire } from 'node:module'
 const require = createRequire(new URL('../functions/package.json', import.meta.url))
 const { initializeApp } = require('firebase-admin/app')
@@ -11,6 +12,7 @@ process.env.FIREBASE_AUTH_EMULATOR_HOST = '127.0.0.1:9099'
 initializeApp({ projectId: 'demo-greenconnect-a3' })
 const auth = getAuth()
 const root = getFirestore().doc('greenconnect/v1')
+// These fixed passwords belong only to reserved .test accounts in the local emulator project.
 const accounts = [
   { uid: 'demo-admin', email: 'admin@example.test', fullName: 'Demo Admin', admin: true },
   { uid: 'demo-member', email: 'member@example.test', fullName: 'Demo Member', admin: false },
