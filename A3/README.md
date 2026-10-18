@@ -140,7 +140,7 @@ Before the email function can be deployed, an operator must configure the provid
    npx firebase functions:secrets:set GREENCONNECT_RESEND_API_KEY --project fit5032-66c61
    ```
 
-3. Copy `functions/.env.example` to `functions/.env.fit5032-66c61` and set `GREENCONNECT_EMAIL_FROM` to the approved sender. The real configuration file is ignored by Git.
+3. Copy `functions/.env.example` to `functions/.env.fit5032-66c61`, set `GREENCONNECT_EMAIL_FROM` to the approved sender and set `GREENCONNECT_EMAIL_ENABLED=true`. The real configuration file is ignored by Git. Leave this flag false when no provider is configured; the other functions can then deploy normally without a mail secret.
 4. Run the build and deployment commands above, then use a verified account with a confirmed booking to request an email. Check the receiving inbox and open the PDF before recording a successful delivery.
 
 The email controls are enabled locally with emulators. They stay hidden in production until `VITE_BOOKING_EMAIL_ENABLED=true` is set and the frontend is rebuilt after provider setup. This lets the other features be reviewed while live email is still pending.
@@ -182,3 +182,13 @@ The analysis accepts at most 366 days at a time. The function also limits a snap
 Tests cover member and revoked-admin denial, current Auth role counts, exclusion of unrelated accounts and personal fields, Melbourne date grouping, combined filters, empty results and a real emulator booking/cancellation changing the capacity and summary together. Production administrator access still needs review through an existing authorised account.
 
 Chart library documentation: [Chart.js interactions](https://www.chartjs.org/docs/latest/configuration/interactions.html), [chart lifecycle](https://www.chartjs.org/docs/latest/developers/api.html), and [Firebase Admin user lookup](https://firebase.google.com/docs/auth/admin/manage-users).
+
+## Submission status
+
+The application is deployed at https://greenconnect-a3-66c61.web.app. Final checks include ESLint, 22 unit tests, 24 Firebase emulator integration tests and a production build. The emulator mail tests use a mock transport; they do not send real messages.
+
+Booking email remains disabled until a provider key and verified sender are configured. The homepage automated accessibility scan reported no violations in the selected WCAG 2.1 A/AA rules, with incomplete items requiring manual review. This is scoped evidence rather than a full conformance assessment. Administrator workflows were checked locally; production positive access must use the existing authorised account.
+
+Compatible dependency patches were applied for the final build. The dependency audit still reports 12 transitive findings (4 moderate and 8 high). Suggested remaining fixes include incompatible package changes, so they have not been applied automatically. The frontend build also reports large export and chart chunks, including the Unicode font loaded for PDF export.
+
+The report, revision notes, verification evidence and submission archives are prepared locally under `submission/` and `evidence/`. They are excluded from Git, along with local configuration and the implementation plan. No live credentials are included in the source package.

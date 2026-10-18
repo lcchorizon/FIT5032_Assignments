@@ -50,3 +50,5 @@ A3/test-results/
 A3/functions/.env*
 A3/functions/.secret.local
 !A3/functions/.env.example
+A3/submission/
+A3/evidence/

@@ -53,10 +53,12 @@ export const greenconnectProfile = onCall(async (request) => {
 export const greenconnectBookEvent = onCall(bookEvent)
 export const greenconnectCancelBooking = onCall(cancelBooking)
 // Bind the mail key from Secret Manager only to the email function. It must never be a VITE variable.
-const resendKey = defineSecret('GREENCONNECT_RESEND_API_KEY')
-const emailFrom = defineString('GREENCONNECT_EMAIL_FROM', { default: '' })
-export const greenconnectSendBookingEmail = onCall({ secrets: [resendKey], timeoutSeconds: 60 }, (request) =>
-  sendBookingEmail(request, { apiKey: resendKey.value(), from: emailFrom.value() }))
+// A disabled mail service must not block deployment of the rest of the application.
+const mailEnabled = process.env.GREENCONNECT_EMAIL_ENABLED === 'true'
+const resendKey = mailEnabled ? defineSecret('GREENCONNECT_RESEND_API_KEY') : null
+const emailFrom = mailEnabled ? defineString('GREENCONNECT_EMAIL_FROM') : null
+export const greenconnectSendBookingEmail = onCall({ secrets: resendKey ? [resendKey] : [], timeoutSeconds: 60 }, (request) =>
+  sendBookingEmail(request, { apiKey: resendKey?.value() || '', from: emailFrom?.value() || '' }))
 
 // Keep the earlier endpoint available but reject it, so old clients cannot bypass the new booking rules.
 export const greenconnectRegisterInterest = onCall(async (request) => {

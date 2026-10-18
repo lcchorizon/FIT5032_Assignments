@@ -33,6 +33,7 @@
     "@eslint/js": "^10.0.1",
     "@firebase/rules-unit-testing": "^5.0.0",
     "@vitejs/plugin-vue": "^6.0.8",
+    "axe-core": "^4.14.0",
     "eslint": "^10.7.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-oxlint": "~1.73.0",
