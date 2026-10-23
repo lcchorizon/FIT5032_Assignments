@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "lint": "run-s \"lint:*\"",
     "format": "prettier --write --experimental-cli src/",
-    "deploy": "npm run build && wrangler pages deploy dist --project-name hl-library-c3",
+    "deploy": "npm run build && wrangler pages deploy dist --config wrangler.c3.jsonc --project-name hl-library-c3",
     "test": "vitest run"
   },
   "dependencies": {

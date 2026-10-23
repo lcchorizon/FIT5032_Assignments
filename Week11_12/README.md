@@ -29,7 +29,7 @@ npx wrangler pages project create hl-library-c3 --production-branch main --force
 npm run deploy
 ```
 
-The installed Wrangler version needs `--force` when creating a legacy Pages project. Normal deployments then use `wrangler pages deploy`. The project has no paid resources.
+The installed Wrangler version needs `--force` when creating a legacy Pages project. Normal deployments then use `wrangler pages deploy`. I keep this CLI project configuration in `wrangler.c3.jsonc` so it does not replace the separate Git deployment settings. The project has no paid resources.
 
 ## GitHub Pages
 
