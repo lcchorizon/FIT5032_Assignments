@@ -20,7 +20,16 @@ Use this repository, with `Week11_12` as the root directory, `npm run build` as 
 
 ## Cloudflare Pages from the CLI
 
-The C3 project and CLI deployment evidence are saved with the final evidence package. The app can also be uploaded with `npm run deploy` after Wrangler login.
+I created the Vue Pages starter with C3 using `--framework=vue --platform=pages`. I then used my library app build for the CLI deployment. The generated starter is kept locally in `tmp/hl-library-c3`.
+
+```sh
+npm create cloudflare@latest -- hl-library-c3 --framework=vue --platform=pages
+npx wrangler login --scopes account:read user:read pages:write
+npx wrangler pages project create hl-library-c3 --production-branch main --force
+npm run deploy
+```
+
+The installed Wrangler version needs `--force` when creating a legacy Pages project. Normal deployments then use `wrangler pages deploy`. The project has no paid resources.
 
 ## GitHub Pages
 
@@ -29,3 +38,12 @@ The workflow in `.github/workflows/week11-12-pages.yml` installs dependencies, b
 ## Research
 
 TTFB and hotlink answers and source links are in the evidence PDF. These answers describe possible improvements. They do not claim performance measurements or protection settings that I have not tested.
+
+## Deployed links
+
+- Cloudflare from Git: https://hl-library-git.pages.dev/
+- Cloudflare from C3 / CLI: https://hl-library-c3.pages.dev/
+- GitHub Pages: https://lcchorizon.github.io/FIT5032_Assignments/
+- First successful workflow: https://github.com/lcchorizon/FIT5032_Assignments/actions/runs/39921411051
+
+The evidence PDF includes real browser screenshots. The GitHub Pages server returned HTTP 200 when checked against its public DNS address. The local DNS resolver initially failed for that new hostname.
